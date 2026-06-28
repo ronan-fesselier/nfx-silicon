@@ -18,3 +18,9 @@ FetchContent_MakeAvailable(doctest)
 list(APPEND CMAKE_MODULE_PATH "${doctest_SOURCE_DIR}/scripts/cmake")
 
 include(doctest)
+
+#----------------------------------------------
+# Test subdirectories
+#----------------------------------------------
+
+add_subdirectory(signal)

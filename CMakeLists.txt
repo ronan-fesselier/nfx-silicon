@@ -32,7 +32,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # Build options
 #----------------------------------------------
 
-option(NFX_SILICON_BUILD_TESTS "Build nfx::silicon tests" OFF)
+option(NFX_SILICON_BUILD_TESTS                 "Build nfx::silicon tests"                 OFF)
+option(NFX_SILICON_ENABLE_NATIVE_OPTIMIZATIONS "Enable CPU-specific native optimizations" OFF)
+option(NFX_SILICON_WARNINGS_AS_ERRORS          "Treat warnings as errors"                 OFF)
 
 #----------------------------------------------
 # Build type
@@ -43,37 +45,13 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 #----------------------------------------------
-# Warning policy
+# CMake modules configuration
 #----------------------------------------------
 
-add_library(nfx-silicon-warnings INTERFACE)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-target_compile_options(nfx-silicon-warnings
-    INTERFACE
-        $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic>
-        $<$<CXX_COMPILER_ID:MSVC>:/W4>
-)
-
-#----------------------------------------------
-# Application sources
-#----------------------------------------------
-
-set(APP_SOURCES
-    src/main.cpp
-)
-
-#----------------------------------------------
-# Executable target
-#----------------------------------------------
-
-add_executable(${PROJECT_NAME}
-    ${APP_SOURCES}
-)
-
-target_link_libraries(${PROJECT_NAME}
-    PRIVATE
-        nfx-silicon-warnings
-)
+include(nfxSiliconSources)
+include(nfxSiliconTarget)
 
 #----------------------------------------------
 # Tests
