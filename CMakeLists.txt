@@ -29,6 +29,12 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 #----------------------------------------------
+# Build options
+#----------------------------------------------
+
+option(NFX_SILICON_BUILD_TESTS "Build nfx::silicon tests" OFF)
+
+#----------------------------------------------
 # Build type
 #----------------------------------------------
 
@@ -68,3 +74,12 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
         nfx-silicon-warnings
 )
+
+#----------------------------------------------
+# Tests
+#----------------------------------------------
+
+if(NFX_SILICON_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
