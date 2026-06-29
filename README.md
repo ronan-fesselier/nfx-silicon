@@ -31,15 +31,16 @@ cmake --build build
 
 ```
 nfx-silicon/
-├── CMakeLists.txt    # Build entry point
-├── cmake/            # CMake modules (sources, target configuration)
+├── CMakeLists.txt       # Build entry point
+├── cmake/               # CMake modules (sources, target configuration)
 ├── include/nfx/
-│   ├── Silicon.h     # Top-level nfx::silicon API entry point
+│   ├── Silicon.h        # Top-level nfx::silicon API entry point
 │   └── silicon/
-│       ├── Types.h   # Shared scalar types (Level, Voltage)
-│       └── signal/   # Signal layer (Signal, Bus, Pin, Wire)
-├── src/              # Implementations
-└── tests/            # Unit tests
+│       ├── Types.h      # Shared scalar types (Level, Voltage)
+│       ├── component/   # Component interfaces (IComponent, IPassive, IDipole, IDiscrete, IInspectable)
+│       └── signal/      # Signal layer (Signal, Bus, Pin, Wire)
+├── src/                 # Implementations
+└── tests/               # Unit tests
 ```
 
 ## Changelog

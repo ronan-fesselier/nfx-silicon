@@ -10,6 +10,14 @@
 - `Silicon.h`: umbrella header for the full `nfx::silicon` public API
 - `Types.h`: shared scalar types (`Level`, `Voltage`)
 
+##### component
+
+- `IComponent`: base interface for all electronic components (name, pins)
+- `IPassive`: interface for passive components
+- `IDipole`: interface for two-terminal passives with virtual R()/L()/C()
+- `IDiscrete`: interface for active discretes (reset, reactive via Pin callbacks)
+- `IInspectable`: orthogonal interface for runtime introspection of internal state
+
 ##### signal
 
 - `Signal`: concept and SignalReadType trait for type-safe pin signal access

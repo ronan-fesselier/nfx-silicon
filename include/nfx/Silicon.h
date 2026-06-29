@@ -10,6 +10,13 @@
 // Core types
 #include "nfx/silicon/Types.h"
 
+// Component interfaces
+#include "nfx/silicon/component/IComponent.h"
+#include "nfx/silicon/component/IDipole.h"
+#include "nfx/silicon/component/IDiscrete.h"
+#include "nfx/silicon/component/IInspectable.h"
+#include "nfx/silicon/component/IPassive.h"
+
 // Signal layer
 #include "nfx/silicon/signal/Bus.h"
 #include "nfx/silicon/signal/Pin.h"
