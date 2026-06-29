@@ -23,4 +23,5 @@ include(doctest)
 # Test subdirectories
 #----------------------------------------------
 
+add_subdirectory(discrete)
 add_subdirectory(signal)

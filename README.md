@@ -38,7 +38,8 @@ nfx-silicon/
 │   └── silicon/
 │       ├── Types.h      # Shared scalar types (Level, Voltage)
 │       ├── component/   # Component interfaces (IComponent, IPassive, IDipole, IDiscrete, IInspectable)
-│       └── signal/      # Signal layer (Signal, Bus, Pin, Wire)
+│       ├── discrete/    # Discrete components (PowerSupply)
+│       └── signal/      # Signal layer (Signal, Bus, Pin, Wire, PowerRail)
 ├── src/                 # Implementations
 └── tests/               # Unit tests
 ```
