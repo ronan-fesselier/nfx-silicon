@@ -15,6 +15,7 @@
 - `Signal`: concept and SignalReadType trait for type-safe pin signal access
 - `Pin`: single electrical node with digital (Level) and analog (float) signal support
 - `Wire`: signal propagation between pins with PushPull, WiredAnd, WiredOr, and Analog resolution models
+- `Bus`: named ordered group of wires with type-safe read for digital and analog signals
 
 #### Tests
 
@@ -22,6 +23,7 @@
 
 - `tests_Pin`: unit tests for Pin drive, read, release, and observer notifications
 - `tests_Wire`: unit tests for Wire attach, resolve, and propagation models
+- `tests_Bus`: unit tests for Bus construction, width, wire access, and read
 
 ### Changed
 

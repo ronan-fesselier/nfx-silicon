@@ -37,7 +37,7 @@ nfx-silicon/
 │   ├── Silicon.h     # Top-level nfx::silicon API entry point
 │   └── silicon/
 │       ├── Types.h   # Shared scalar types (Level, Voltage)
-│       └── signal/   # Signal layer (Signal, Pin, Wire)
+│       └── signal/   # Signal layer (Signal, Bus, Pin, Wire)
 ├── src/              # Implementations
 └── tests/            # Unit tests
 ```

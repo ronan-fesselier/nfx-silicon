@@ -11,6 +11,7 @@
 #include "nfx/silicon/Types.h"
 
 // Signal layer
+#include "nfx/silicon/signal/Bus.h"
 #include "nfx/silicon/signal/Pin.h"
 #include "nfx/silicon/signal/Signal.h"
 #include "nfx/silicon/signal/Wire.h"
