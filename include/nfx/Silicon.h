@@ -13,3 +13,4 @@
 // Signal layer
 #include "nfx/silicon/signal/Pin.h"
 #include "nfx/silicon/signal/Signal.h"
+#include "nfx/silicon/signal/Wire.h"
