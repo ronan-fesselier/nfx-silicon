@@ -26,6 +26,8 @@
 
 #include "nfx/silicon/discrete/PowerSupply.h"
 
+#include "nfx/silicon/discrete/Switch.h"
+
 // Signal layer
 #include "nfx/silicon/signal/Bus.h"
 #include "nfx/silicon/signal/Pin.h"

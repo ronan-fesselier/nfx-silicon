@@ -12,6 +12,8 @@ set(NFX_SILICON_SOURCES
 
     src/discrete/PowerSupply.cpp
 
+    src/discrete/Switch.cpp
+
     # Signal layer
     src/signal/Bus.cpp
     src/signal/Pin.cpp
