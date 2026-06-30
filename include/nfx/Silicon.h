@@ -22,6 +22,8 @@
 #include "nfx/silicon/discrete/Inductor.h"
 #include "nfx/silicon/discrete/Resistor.h"
 
+#include "nfx/silicon/discrete/Diode.h"
+
 #include "nfx/silicon/discrete/PowerSupply.h"
 
 // Signal layer

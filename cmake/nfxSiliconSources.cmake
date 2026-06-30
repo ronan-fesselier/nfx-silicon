@@ -8,6 +8,8 @@ set(NFX_SILICON_SOURCES
     src/discrete/Inductor.cpp
     src/discrete/Resistor.cpp
 
+    src/discrete/Diode.cpp
+
     src/discrete/PowerSupply.cpp
 
     # Signal layer
