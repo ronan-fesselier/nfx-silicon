@@ -18,6 +18,10 @@
 #include "nfx/silicon/component/IPassive.h"
 
 // Discrete components
+#include "nfx/silicon/discrete/Capacitor.h"
+#include "nfx/silicon/discrete/Inductor.h"
+#include "nfx/silicon/discrete/Resistor.h"
+
 #include "nfx/silicon/discrete/PowerSupply.h"
 
 // Signal layer

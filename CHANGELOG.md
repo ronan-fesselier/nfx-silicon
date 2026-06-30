@@ -21,6 +21,9 @@
 ##### discrete
 
 - `PowerSupply`: passive component driving fixed analog voltages per rail
+- `Resistor`: two-terminal passive component with a fixed resistance
+- `Inductor`: two-terminal passive component with a fixed inductance
+- `Capacitor`: two-terminal passive component with a fixed capacitance
 
 ##### signal
 
@@ -41,6 +44,7 @@
 ##### discrete
 
 - `tests_PowerSupply`: unit tests for PowerSupply construction, pin creation, and voltage output
+- `tests_Dipoles`: unit tests for Resistor, Capacitor, and Inductor construction, pins, and R()/L()/C() values
 
 ### Changed
 
