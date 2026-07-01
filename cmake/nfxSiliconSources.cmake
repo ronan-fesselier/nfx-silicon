@@ -20,4 +20,7 @@ set(NFX_SILICON_SOURCES
     src/signal/Bus.cpp
     src/signal/Pin.cpp
     src/signal/Wire.cpp
+
+    # Internal runtime
+    src/internal/runtime/Error.cpp
 )

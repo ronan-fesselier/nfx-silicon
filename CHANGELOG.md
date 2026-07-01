@@ -10,6 +10,10 @@
 - `Silicon.h`: umbrella header for the full `nfx::silicon` public API
 - `Types.h`: shared scalar types (`Level`, `Voltage`)
 
+#### Internal runtime
+
+- `nfx::silicon::internal::runtime::error`: runtime log infrastructure (`Level`, `Kind`, `log`)
+
 ##### component
 
 - `IComponent`: base interface for all electronic components (name, pins)
