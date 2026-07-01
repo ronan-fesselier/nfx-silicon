@@ -9,6 +9,7 @@ set(NFX_SILICON_SOURCES
     src/discrete/Resistor.cpp
 
     src/discrete/Diode.cpp
+    src/discrete/LED.cpp
 
     src/discrete/PowerSupply.cpp
 

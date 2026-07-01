@@ -23,6 +23,7 @@
 #include "nfx/silicon/discrete/Resistor.h"
 
 #include "nfx/silicon/discrete/Diode.h"
+#include "nfx/silicon/discrete/LED.h"
 
 #include "nfx/silicon/discrete/PowerSupply.h"
 

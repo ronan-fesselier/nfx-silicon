@@ -27,6 +27,7 @@
 - `Diode`: two-terminal passive component with asymmetric conduction (Anode/Cathode)
 - `Switch`: two-terminal SPST toggle switch modeled as a variable contact resistance
 - `PushButton`: two-terminal momentary contact (NormallyOpen/NormallyClosed) modeled as a variable contact resistance
+- `LED`: two-terminal indicator with Color presets and resolved forward voltage
 
 ##### signal
 
@@ -50,6 +51,7 @@
 - `tests_Dipoles`: unit tests for Resistor, Capacitor, and Inductor construction, pins, and R()/L()/C() values
 - `tests_Diode`: unit tests for Diode construction, pins, Terminal mapping, and forward/Shockley parameters
 - `tests_Switches`: unit tests for Switch and PushButton construction, pins, contact state, and R() values
+- `tests_LED`: unit tests for LED construction, pins, Terminal mapping, Color presets, and Shockley parameters
 
 ### Changed
 
