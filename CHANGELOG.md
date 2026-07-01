@@ -26,6 +26,7 @@
 - `Capacitor`: two-terminal passive component with a fixed capacitance
 - `Diode`: two-terminal passive component with asymmetric conduction (Anode/Cathode)
 - `Switch`: two-terminal SPST toggle switch modeled as a variable contact resistance
+- `PushButton`: two-terminal momentary contact (NormallyOpen/NormallyClosed) modeled as a variable contact resistance
 
 ##### signal
 
@@ -48,7 +49,7 @@
 - `tests_PowerSupply`: unit tests for PowerSupply construction, pin creation, and voltage output
 - `tests_Dipoles`: unit tests for Resistor, Capacitor, and Inductor construction, pins, and R()/L()/C() values
 - `tests_Diode`: unit tests for Diode construction, pins, Terminal mapping, and forward/Shockley parameters
-- `tests_Switches`: unit tests for Switch construction, pins, contact state, and R() values
+- `tests_Switches`: unit tests for Switch and PushButton construction, pins, contact state, and R() values
 
 ### Changed
 

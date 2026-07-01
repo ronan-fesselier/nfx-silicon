@@ -1,4 +1,4 @@
-#include "nfx/silicon/discrete/Switch.h"
+#include "nfx/silicon/discrete/PushButton.h"
 
 #include "detail/ContactResistance.h"
 
@@ -7,9 +7,9 @@
 
 namespace nfx::silicon::discrete
 {
-    Switch::Switch(const Descriptor& descriptor)
+    PushButton::PushButton(const Descriptor& descriptor)
         : m_descriptor{ descriptor },
-          m_state{ descriptor.initialState },
+          m_isPressed{ false },
           m_pinA{ signal::Pin::Descriptor{
               .name = "A", .kind = signal::Pin::Kind::Analog, .direction = signal::Pin::Direction::Bidirectional } },
           m_pinB{ signal::Pin::Descriptor{
@@ -17,12 +17,12 @@ namespace nfx::silicon::discrete
           m_pinPtrs{ &m_pinA, &m_pinB }
     {}
 
-    const char* Switch::name() const
+    const char* PushButton::name() const
     {
         return m_descriptor.name;
     }
 
-    signal::Pin& Switch::pin(const char* name)
+    signal::Pin& PushButton::pin(const char* name)
     {
         for (auto* p : m_pinPtrs)
         {
@@ -31,11 +31,11 @@ namespace nfx::silicon::discrete
                 return *p;
             }
         }
-        assert(false && "Switch: unknown pin name");
+        assert(false && "PushButton: unknown pin name");
         return *m_pinPtrs[0];
     }
 
-    signal::Pin& Switch::pin(Terminal terminal)
+    signal::Pin& PushButton::pin(Terminal terminal)
     {
         switch (terminal)
         {
@@ -45,32 +45,33 @@ namespace nfx::silicon::discrete
                 return m_pinB;
         }
 
-        assert(false && "Switch: invalid terminal");
+        assert(false && "PushButton: invalid terminal");
         return m_pinA;
     }
 
-    std::span<signal::Pin* const> Switch::pins() const
+    std::span<signal::Pin* const> PushButton::pins() const
     {
         return m_pinPtrs;
     }
 
-    void Switch::close()
+    void PushButton::press()
     {
-        m_state = State::Closed;
+        m_isPressed = true;
     }
 
-    void Switch::open()
+    void PushButton::release()
     {
-        m_state = State::Open;
+        m_isPressed = false;
     }
 
-    Switch::State Switch::state() const
+    bool PushButton::isPressed() const
     {
-        return m_state;
+        return m_isPressed;
     }
 
-    float Switch::R() const
+    float PushButton::R() const
     {
-        return m_state == State::Closed ? 0.0f : detail::kOpenResistance;
+        const bool closed = (m_descriptor.contactType == ContactType::NormallyOpen) ? m_isPressed : !m_isPressed;
+        return closed ? 0.0f : detail::kOpenResistance;
     }
 } // namespace nfx::silicon::discrete

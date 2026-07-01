@@ -26,6 +26,7 @@
 
 #include "nfx/silicon/discrete/PowerSupply.h"
 
+#include "nfx/silicon/discrete/PushButton.h"
 #include "nfx/silicon/discrete/Switch.h"
 
 // Signal layer

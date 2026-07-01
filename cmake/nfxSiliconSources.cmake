@@ -12,6 +12,7 @@ set(NFX_SILICON_SOURCES
 
     src/discrete/PowerSupply.cpp
 
+    src/discrete/PushButton.cpp
     src/discrete/Switch.cpp
 
     # Signal layer
