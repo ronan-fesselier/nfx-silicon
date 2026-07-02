@@ -1,5 +1,7 @@
 #include "nfx/silicon/signal/Wire.h"
 
+#include "internal/runtime/Error.h"
+
 #include <cassert>
 
 namespace nfx::silicon::signal
@@ -7,14 +9,28 @@ namespace nfx::silicon::signal
     Wire::Wire(const Descriptor& descriptor)
         : m_descriptor{ descriptor }
     {
-        assert(
-            (m_descriptor.kind != Pin::Kind::Analog || m_descriptor.resolution == Resolution::PushPull) &&
-            "Analog wire must not specify a digital resolution model");
+        if (m_descriptor.kind == Pin::Kind::Analog && m_descriptor.resolution != Resolution::PushPull)
+        {
+            internal::runtime::error::log(
+                "Wire",
+                internal::runtime::error::Level::Critical,
+                internal::runtime::error::Kind::Contract,
+                "analog wire must not specify a digital resolution model");
+            assert(false && "Wire: analog wire must not specify a digital resolution model");
+        }
     }
 
     void Wire::attach(Pin& pin)
     {
-        assert(pin.descriptor().kind == m_descriptor.kind && "Pin kind does not match Wire kind");
+        if (pin.descriptor().kind != m_descriptor.kind)
+        {
+            internal::runtime::error::log(
+                "Wire",
+                internal::runtime::error::Level::Critical,
+                internal::runtime::error::Kind::Contract,
+                "pin kind does not match wire kind");
+            assert(false && "Wire: pin kind does not match wire kind");
+        }
         const auto direction = pin.descriptor().direction;
 
         if (direction == Pin::Direction::Output || direction == Pin::Direction::Bidirectional ||
@@ -93,7 +109,15 @@ namespace nfx::silicon::signal
                     {
                         if (activeDrivers > 0)
                         {
-                            assert(l == firstActive && "PushPull bus conflict: multiple drivers with different levels");
+                            if (l != firstActive)
+                            {
+                                internal::runtime::error::log(
+                                    "Wire",
+                                    internal::runtime::error::Level::Critical,
+                                    internal::runtime::error::Kind::Signal,
+                                    "PushPull conflict: multiple drivers with different levels");
+                                assert(false && "Wire: PushPull conflict: multiple drivers with different levels");
+                            }
                         }
                         firstActive = l;
                         resolved = l;

@@ -1,5 +1,7 @@
 #include "nfx/silicon/discrete/Diode.h"
 
+#include "internal/runtime/Error.h"
+
 #include <cassert>
 #include <cstring>
 
@@ -28,6 +30,11 @@ namespace nfx::silicon::discrete
                 return *p;
             }
         }
+        internal::runtime::error::log(
+            "Diode",
+            internal::runtime::error::Level::Critical,
+            internal::runtime::error::Kind::Programming,
+            "unknown pin name");
         assert(false && "Diode: unknown pin name");
         return *m_pinPtrs[0];
     }
@@ -43,6 +50,11 @@ namespace nfx::silicon::discrete
                 return m_pinCathode;
         }
 
+        internal::runtime::error::log(
+            "Diode",
+            internal::runtime::error::Level::Critical,
+            internal::runtime::error::Kind::Programming,
+            "invalid terminal");
         assert(false && "Diode: invalid terminal");
         return m_pinAnode;
     }

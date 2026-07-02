@@ -2,6 +2,8 @@
 
 #include "detail/ContactResistance.h"
 
+#include "internal/runtime/Error.h"
+
 #include <cassert>
 #include <cstring>
 
@@ -31,6 +33,11 @@ namespace nfx::silicon::discrete
                 return *p;
             }
         }
+        internal::runtime::error::log(
+            "PushButton",
+            internal::runtime::error::Level::Critical,
+            internal::runtime::error::Kind::Programming,
+            "unknown pin name");
         assert(false && "PushButton: unknown pin name");
         return *m_pinPtrs[0];
     }
@@ -45,6 +52,11 @@ namespace nfx::silicon::discrete
                 return m_pinB;
         }
 
+        internal::runtime::error::log(
+            "PushButton",
+            internal::runtime::error::Level::Critical,
+            internal::runtime::error::Kind::Programming,
+            "invalid terminal");
         assert(false && "PushButton: invalid terminal");
         return m_pinA;
     }

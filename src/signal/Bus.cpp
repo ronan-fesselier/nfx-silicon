@@ -1,5 +1,7 @@
 #include "nfx/silicon/signal/Bus.h"
 
+#include "internal/runtime/Error.h"
+
 #include <cassert>
 
 namespace nfx::silicon::signal
@@ -9,7 +11,15 @@ namespace nfx::silicon::signal
     {
         for (auto* w : m_descriptor.wires)
         {
-            assert(w->descriptor().kind == m_descriptor.kind && "Wire kind does not match Bus kind");
+            if (w->descriptor().kind != m_descriptor.kind)
+            {
+                internal::runtime::error::log(
+                    "Bus",
+                    internal::runtime::error::Level::Critical,
+                    internal::runtime::error::Kind::Contract,
+                    "wire kind does not match bus kind");
+                assert(false && "Bus: wire kind does not match bus kind");
+            }
         }
     }
 
@@ -20,14 +30,30 @@ namespace nfx::silicon::signal
 
     Wire& Bus::wire(std::size_t index) const
     {
-        assert(index < m_descriptor.wires.size() && "Bus wire index out of range");
+        if (index >= m_descriptor.wires.size())
+        {
+            internal::runtime::error::log(
+                "Bus",
+                internal::runtime::error::Level::Critical,
+                internal::runtime::error::Kind::Programming,
+                "wire index out of range");
+            assert(false && "Bus: wire index out of range");
+        }
         return *m_descriptor.wires[index];
     }
 
     template <>
     void Bus::read<Level>(std::span<Level> out) const
     {
-        assert(out.size() == m_descriptor.wires.size() && "Output span size does not match bus width");
+        if (out.size() != m_descriptor.wires.size())
+        {
+            internal::runtime::error::log(
+                "Bus",
+                internal::runtime::error::Level::Critical,
+                internal::runtime::error::Kind::Contract,
+                "output span size does not match bus width");
+            assert(false && "Bus: output span size does not match bus width");
+        }
         for (std::size_t i = 0; i < m_descriptor.wires.size(); ++i)
         {
             out[i] = m_descriptor.wires[i]->read<Level>();
@@ -37,7 +63,15 @@ namespace nfx::silicon::signal
     template <>
     void Bus::read<float>(std::span<Voltage> out) const
     {
-        assert(out.size() == m_descriptor.wires.size() && "Output span size does not match bus width");
+        if (out.size() != m_descriptor.wires.size())
+        {
+            internal::runtime::error::log(
+                "Bus",
+                internal::runtime::error::Level::Critical,
+                internal::runtime::error::Kind::Contract,
+                "output span size does not match bus width");
+            assert(false && "Bus: output span size does not match bus width");
+        }
         for (std::size_t i = 0; i < m_descriptor.wires.size(); ++i)
         {
             out[i] = m_descriptor.wires[i]->read<float>();

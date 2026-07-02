@@ -1,5 +1,7 @@
 #include "nfx/silicon/discrete/PowerSupply.h"
 
+#include "internal/runtime/Error.h"
+
 #include <cassert>
 #include <cstring>
 
@@ -12,7 +14,15 @@ namespace nfx::silicon::discrete
         {
             for (const auto* existing : m_pinPtrs)
             {
-                assert(std::strcmp(existing->descriptor().name, rail.name) != 0 && "PowerSupply: duplicate rail name");
+                if (std::strcmp(existing->descriptor().name, rail.name) == 0)
+                {
+                    internal::runtime::error::log(
+                        "PowerSupply",
+                        internal::runtime::error::Level::Critical,
+                        internal::runtime::error::Kind::Contract,
+                        "duplicate rail name");
+                    assert(false && "PowerSupply: duplicate rail name");
+                }
             }
 
             auto pin = std::make_unique<signal::Pin>(signal::Pin::Descriptor{
@@ -39,6 +49,11 @@ namespace nfx::silicon::discrete
                 return *p;
             }
         }
+        internal::runtime::error::log(
+            "PowerSupply",
+            internal::runtime::error::Level::Critical,
+            internal::runtime::error::Kind::Programming,
+            "unknown pin name");
         assert(false && "PowerSupply: unknown pin name");
         return *m_pinPtrs[0];
     }

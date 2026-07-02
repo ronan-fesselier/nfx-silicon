@@ -2,6 +2,8 @@
 
 #include "detail/ContactResistance.h"
 
+#include "internal/runtime/Error.h"
+
 #include <cassert>
 #include <cstring>
 
@@ -31,6 +33,11 @@ namespace nfx::silicon::discrete
                 return *p;
             }
         }
+        internal::runtime::error::log(
+            "Switch",
+            internal::runtime::error::Level::Critical,
+            internal::runtime::error::Kind::Programming,
+            "unknown pin name");
         assert(false && "Switch: unknown pin name");
         return *m_pinPtrs[0];
     }
@@ -45,6 +52,11 @@ namespace nfx::silicon::discrete
                 return m_pinB;
         }
 
+        internal::runtime::error::log(
+            "Switch",
+            internal::runtime::error::Level::Critical,
+            internal::runtime::error::Kind::Programming,
+            "invalid terminal");
         assert(false && "Switch: invalid terminal");
         return m_pinA;
     }

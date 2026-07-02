@@ -1,5 +1,7 @@
 #include "nfx/silicon/discrete/Resistor.h"
 
+#include "internal/runtime/Error.h"
+
 #include <cassert>
 #include <cstring>
 
@@ -28,6 +30,11 @@ namespace nfx::silicon::discrete
                 return *p;
             }
         }
+        internal::runtime::error::log(
+            "Resistor",
+            internal::runtime::error::Level::Critical,
+            internal::runtime::error::Kind::Programming,
+            "unknown pin name");
         assert(false && "Resistor: unknown pin name");
         return *m_pinPtrs[0];
     }
@@ -42,6 +49,11 @@ namespace nfx::silicon::discrete
                 return m_pinB;
         }
 
+        internal::runtime::error::log(
+            "Resistor",
+            internal::runtime::error::Level::Critical,
+            internal::runtime::error::Kind::Programming,
+            "invalid terminal");
         assert(false && "Resistor: invalid terminal");
         return m_pinA;
     }
