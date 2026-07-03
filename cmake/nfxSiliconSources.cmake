@@ -23,6 +23,7 @@ set(NFX_SILICON_SOURCES
     src/gate/Not.cpp
     src/gate/Or.cpp
     src/gate/Xor.cpp
+    src/gate/Xnor.cpp
 
     # Signal layer
     src/signal/Bus.cpp

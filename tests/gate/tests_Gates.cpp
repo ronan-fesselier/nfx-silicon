@@ -552,3 +552,100 @@ TEST_SUITE("gate::Xor")
         CHECK(g.name() == std::string_view("U1"));
     }
 }
+
+TEST_SUITE("gate::Xnor")
+{
+    TEST_CASE("Construction creates pins A, B and Y")
+    {
+        Xnor g{ Xnor::Descriptor{ .name = "U1" } };
+
+        CHECK(g.pins().size() == 3);
+        CHECK(g.pin("A").descriptor().name == std::string_view("A"));
+        CHECK(g.pin("B").descriptor().name == std::string_view("B"));
+        CHECK(g.pin("Y").descriptor().name == std::string_view("Y"));
+    }
+
+    TEST_CASE("Pins A and B are Digital Input, Y is Digital Output")
+    {
+        Xnor g{ Xnor::Descriptor{ .name = "U1" } };
+
+        CHECK(g.pin("A").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("A").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("B").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("B").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("Y").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("Y").descriptor().direction == Pin::Direction::Output);
+    }
+
+    TEST_CASE("Terminal enum maps to correct pins")
+    {
+        Xnor g{ Xnor::Descriptor{ .name = "U1" } };
+
+        CHECK(&g.pin(Xnor::Terminal::A) == &g.pin("A"));
+        CHECK(&g.pin(Xnor::Terminal::B) == &g.pin("B"));
+        CHECK(&g.pin(Xnor::Terminal::Y) == &g.pin("Y"));
+    }
+
+    TEST_CASE("Truth table: Low == Low -> High")
+    {
+        Xnor g{ Xnor::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::Low);
+        g.pin("B").drive<Level>(Level::Low);
+
+        CHECK(g.pin("Y").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Truth table: Low != High -> Low")
+    {
+        Xnor g{ Xnor::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::Low);
+        g.pin("B").drive<Level>(Level::High);
+
+        CHECK(g.pin("Y").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Truth table: High != Low -> Low")
+    {
+        Xnor g{ Xnor::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::High);
+        g.pin("B").drive<Level>(Level::Low);
+
+        CHECK(g.pin("Y").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Truth table: High == High -> High")
+    {
+        Xnor g{ Xnor::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::High);
+        g.pin("B").drive<Level>(Level::High);
+
+        CHECK(g.pin("Y").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Truth table: HighZ on A -> HighZ")
+    {
+        Xnor g{ Xnor::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::High);
+        g.pin("B").drive<Level>(Level::High);
+        g.pin("A").release();
+
+        CHECK(g.pin("Y").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("Truth table: HighZ on B -> HighZ")
+    {
+        Xnor g{ Xnor::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::High);
+        g.pin("B").drive<Level>(Level::High);
+        g.pin("B").release();
+
+        CHECK(g.pin("Y").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("Component name is stored correctly")
+    {
+        Xnor g{ Xnor::Descriptor{ .name = "U1" } };
+
+        CHECK(g.name() == std::string_view("U1"));
+    }
+}
