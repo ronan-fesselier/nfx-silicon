@@ -77,6 +77,7 @@
 
 - `half-adder`: half adder sample wiring Xor and And gates via Pin and Wire (S = A ^ B, C = A & B)
 - `adder`: full adder sample wiring five gates via Pin and Wire (S = A ^ B ^ Cin, Cout = (A & B) | (Cin & (A ^ B)))
+- `register-adder`: scalable N-bit ripple carry adder built from N full adder cells
 
 ### Changed
 
