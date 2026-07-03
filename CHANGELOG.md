@@ -36,6 +36,7 @@
 ##### gate
 
 - `Not`: single-input inverter gate, reactive via Pin callback, truth table Low/High/HighZ
+- `And`: two-input AND gate, reactive via Pin callbacks, truth table Low/High/HighZ
 
 ##### signal
 
@@ -63,7 +64,7 @@
 
 ##### gate
 
-- `tests_Gates`: single-input inverter gate, reactive via Pin callback, truth table Low/High/HighZ
+- `tests_Gates`: unit tests for Not and And gates (construction, pins, truth table, Terminal enum)
 
 ### Changed
 

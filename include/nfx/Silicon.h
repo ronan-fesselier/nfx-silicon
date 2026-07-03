@@ -31,6 +31,7 @@
 #include "nfx/silicon/discrete/Switch.h"
 
 // Gate primitives
+#include "nfx/silicon/gate/And.h"
 #include "nfx/silicon/gate/Not.h"
 
 // Signal layer

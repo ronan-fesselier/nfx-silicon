@@ -17,6 +17,7 @@ set(NFX_SILICON_SOURCES
     src/discrete/Switch.cpp
 
     # Gate primitives
+    src/gate/And.cpp
     src/gate/Not.cpp
 
     # Signal layer
