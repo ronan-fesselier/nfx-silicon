@@ -39,6 +39,9 @@
 #include "nfx/silicon/gate/Xor.h"
 #include "nfx/silicon/gate/Xnor.h"
 
+// Sequential gate primitives
+#include "nfx/silicon/gate/SRLatch.h"
+
 // Signal layer
 #include "nfx/silicon/signal/Bus.h"
 #include "nfx/silicon/signal/Pin.h"

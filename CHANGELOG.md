@@ -42,6 +42,7 @@
 - `Nor`: two-input NOR gate, reactive via Pin callbacks, truth table Low/High/HighZ
 - `Xor`: two-input XOR gate, reactive via Pin callbacks, truth table Low/High/HighZ
 - `Xnor`: two-input XNOR gate, reactive via Pin callbacks, truth table Low/High/HighZ
+- `SRLatch`: asynchronous SR latch (IDiscrete), reactive via Pin callbacks, forbidden state releases Q/NQ to HighZ, HighZ input holds state
 
 ##### signal
 
@@ -70,6 +71,7 @@
 ##### gate
 
 - `tests_Gates`: unit tests for Not, And, Or, Nand, Nor, Xor, and Xnor gates (construction, pins, truth table, Terminal enum)
+- `tests_SequentialGates`: unit tests for SRLatch (construction, pins, truth table, hold, forbidden state, reset, Terminal enum)
 
 #### Samples
 

@@ -25,6 +25,9 @@ set(NFX_SILICON_SOURCES
     src/gate/Xor.cpp
     src/gate/Xnor.cpp
 
+    # Sequential gate primitives
+    src/gate/SRLatch.cpp
+
     # Signal layer
     src/signal/Bus.cpp
     src/signal/Pin.cpp
