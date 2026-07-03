@@ -33,6 +33,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 #----------------------------------------------
 
 option(NFX_SILICON_BUILD_TESTS                 "Build nfx::silicon tests"                 OFF)
+option(NFX_SILICON_BUILD_SAMPLES               "Build nfx::silicon sample executables"    OFF)
 option(NFX_SILICON_ENABLE_NATIVE_OPTIMIZATIONS "Enable CPU-specific native optimizations" OFF)
 option(NFX_SILICON_WARNINGS_AS_ERRORS          "Treat warnings as errors"                 OFF)
 
@@ -60,4 +61,12 @@ include(nfxSiliconTarget)
 if(NFX_SILICON_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
+endif()
+
+#----------------------------------------------
+# Samples
+#----------------------------------------------
+
+if(NFX_SILICON_BUILD_SAMPLES)
+    add_subdirectory(samples)
 endif()

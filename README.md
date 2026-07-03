@@ -41,6 +41,7 @@ nfx-silicon/
 │       ├── gate/        # Combinational gate primitives (Not, And, Or...)
 │       ├── discrete/    # Discrete components (PowerSupply, Resistor, Inductor, Capacitor, Diode...)
 │       └── signal/      # Signal layer (Signal, Bus, Pin, Wire, PowerRail)
+├── samples/             # Runnable samples demonstrating nfx::silicon circuits
 ├── src/                 # Implementations
 └── tests/               # Unit tests
 ```
