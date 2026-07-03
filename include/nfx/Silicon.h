@@ -36,6 +36,7 @@
 #include "nfx/silicon/gate/Nor.h"
 #include "nfx/silicon/gate/Not.h"
 #include "nfx/silicon/gate/Or.h"
+#include "nfx/silicon/gate/Xor.h"
 
 // Signal layer
 #include "nfx/silicon/signal/Bus.h"

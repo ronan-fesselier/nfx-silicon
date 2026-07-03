@@ -40,6 +40,7 @@
 - `Or`: two-input OR gate, reactive via Pin callbacks, truth table Low/High/HighZ
 - `Nand`: two-input NAND gate, reactive via Pin callbacks, truth table Low/High/HighZ
 - `Nor`: two-input NOR gate, reactive via Pin callbacks, truth table Low/High/HighZ
+- `Xor`: two-input XOR gate, reactive via Pin callbacks, truth table Low/High/HighZ
 
 ##### signal
 
@@ -67,7 +68,7 @@
 
 ##### gate
 
-- `tests_Gates`: unit tests for Not, And, Or, Nand, and Nor gates (construction, pins, truth table, Terminal enum)
+- `tests_Gates`: unit tests for Not, And, Or, Nand, Nor, and Xor gates (construction, pins, truth table, Terminal enum)
 
 ### Changed
 
