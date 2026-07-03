@@ -33,6 +33,10 @@
 - `PushButton`: two-terminal momentary contact (NormallyOpen/NormallyClosed) modeled as a variable contact resistance
 - `LED`: two-terminal indicator with Color presets and resolved forward voltage
 
+##### gate
+
+- `Not`: single-input inverter gate, reactive via Pin callback, truth table Low/High/HighZ
+
 ##### signal
 
 - `Signal`: concept and SignalReadType trait for type-safe pin signal access
@@ -56,6 +60,10 @@
 - `tests_Diode`: unit tests for Diode construction, pins, Terminal mapping, and forward/Shockley parameters
 - `tests_Switches`: unit tests for Switch and PushButton construction, pins, contact state, and R() values
 - `tests_LED`: unit tests for LED construction, pins, Terminal mapping, Color presets, and Shockley parameters
+
+##### gate
+
+- `tests_Gates`: single-input inverter gate, reactive via Pin callback, truth table Low/High/HighZ
 
 ### Changed
 

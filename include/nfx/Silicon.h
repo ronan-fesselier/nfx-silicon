@@ -30,6 +30,9 @@
 #include "nfx/silicon/discrete/PushButton.h"
 #include "nfx/silicon/discrete/Switch.h"
 
+// Gate primitives
+#include "nfx/silicon/gate/Not.h"
+
 // Signal layer
 #include "nfx/silicon/signal/Bus.h"
 #include "nfx/silicon/signal/Pin.h"

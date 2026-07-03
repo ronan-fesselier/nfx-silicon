@@ -16,6 +16,9 @@ set(NFX_SILICON_SOURCES
     src/discrete/PushButton.cpp
     src/discrete/Switch.cpp
 
+    # Gate primitives
+    src/gate/Not.cpp
+
     # Signal layer
     src/signal/Bus.cpp
     src/signal/Pin.cpp

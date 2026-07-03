@@ -38,6 +38,7 @@ nfx-silicon/
 │   └── silicon/
 │       ├── Types.h      # Shared scalar types (Level, Voltage)
 │       ├── component/   # Component interfaces (IComponent, IPassive, IDipole, IDiscrete, IInspectable)
+│       ├── gate/        # Combinational gate primitives (Not, And, Or...)
 │       ├── discrete/    # Discrete components (PowerSupply, Resistor, Inductor, Capacitor, Diode...)
 │       └── signal/      # Signal layer (Signal, Bus, Pin, Wire, PowerRail)
 ├── src/                 # Implementations
