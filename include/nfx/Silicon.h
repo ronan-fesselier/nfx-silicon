@@ -33,6 +33,7 @@
 // Gate primitives
 #include "nfx/silicon/gate/And.h"
 #include "nfx/silicon/gate/Not.h"
+#include "nfx/silicon/gate/Or.h"
 
 // Signal layer
 #include "nfx/silicon/signal/Bus.h"
