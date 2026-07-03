@@ -135,3 +135,126 @@ TEST_SUITE("gate::SRLatch")
         CHECK(g.name() == std::string_view("U1"));
     }
 }
+
+TEST_SUITE("gate::DLatch")
+{
+    TEST_CASE("Construction creates pins D, EN, Q and NQ")
+    {
+        DLatch g{ DLatch::Descriptor{ .name = "U1" } };
+
+        CHECK(g.pins().size() == 4);
+        CHECK(g.pin("D").descriptor().name == std::string_view("D"));
+        CHECK(g.pin("EN").descriptor().name == std::string_view("EN"));
+        CHECK(g.pin("Q").descriptor().name == std::string_view("Q"));
+        CHECK(g.pin("NQ").descriptor().name == std::string_view("NQ"));
+    }
+
+    TEST_CASE("Pin kinds and directions are correct")
+    {
+        DLatch g{ DLatch::Descriptor{ .name = "U1" } };
+
+        CHECK(g.pin("D").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("D").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("EN").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("EN").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("Q").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("Q").descriptor().direction == Pin::Direction::Output);
+        CHECK(g.pin("NQ").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("NQ").descriptor().direction == Pin::Direction::Output);
+    }
+
+    TEST_CASE("Terminal enum maps to correct pins")
+    {
+        DLatch g{ DLatch::Descriptor{ .name = "U1" } };
+
+        CHECK(&g.pin(DLatch::Terminal::D) == &g.pin("D"));
+        CHECK(&g.pin(DLatch::Terminal::EN) == &g.pin("EN"));
+        CHECK(&g.pin(DLatch::Terminal::Q) == &g.pin("Q"));
+        CHECK(&g.pin(DLatch::Terminal::NQ) == &g.pin("NQ"));
+    }
+
+    TEST_CASE("Transparent: EN=High D=High -> Q=High NQ=Low")
+    {
+        DLatch g{ DLatch::Descriptor{ .name = "U1" } };
+        g.pin("EN").drive<Level>(Level::High);
+        g.pin("D").drive<Level>(Level::High);
+
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+        CHECK(g.pin("NQ").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Transparent: EN=High D=Low -> Q=Low NQ=High")
+    {
+        DLatch g{ DLatch::Descriptor{ .name = "U1" } };
+        g.pin("EN").drive<Level>(Level::High);
+        g.pin("D").drive<Level>(Level::Low);
+
+        CHECK(g.pin("Q").read<Level>() == Level::Low);
+        CHECK(g.pin("NQ").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Latched: EN=Low holds state")
+    {
+        DLatch g{ DLatch::Descriptor{ .name = "U1" } };
+
+        g.pin("EN").drive<Level>(Level::High);
+        g.pin("D").drive<Level>(Level::High);
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+
+        g.pin("EN").drive<Level>(Level::Low);
+        g.pin("D").drive<Level>(Level::Low);
+
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+        CHECK(g.pin("NQ").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("HighZ on EN holds state")
+    {
+        DLatch g{ DLatch::Descriptor{ .name = "U1" } };
+
+        g.pin("EN").drive<Level>(Level::High);
+        g.pin("D").drive<Level>(Level::Low);
+        CHECK(g.pin("Q").read<Level>() == Level::Low);
+
+        g.pin("EN").release();
+        g.pin("D").drive<Level>(Level::High);
+
+        CHECK(g.pin("Q").read<Level>() == Level::Low);
+        CHECK(g.pin("NQ").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("HighZ on D with EN=High holds state")
+    {
+        DLatch g{ DLatch::Descriptor{ .name = "U1" } };
+
+        g.pin("EN").drive<Level>(Level::High);
+        g.pin("D").drive<Level>(Level::High);
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+
+        g.pin("D").release();
+
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+        CHECK(g.pin("NQ").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("reset() drives Q=Low NQ=High")
+    {
+        DLatch g{ DLatch::Descriptor{ .name = "U1" } };
+
+        g.pin("EN").drive<Level>(Level::High);
+        g.pin("D").drive<Level>(Level::High);
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+
+        g.reset();
+
+        CHECK(g.pin("Q").read<Level>() == Level::Low);
+        CHECK(g.pin("NQ").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Component name is stored correctly")
+    {
+        DLatch g{ DLatch::Descriptor{ .name = "U1" } };
+
+        CHECK(g.name() == std::string_view("U1"));
+    }
+}

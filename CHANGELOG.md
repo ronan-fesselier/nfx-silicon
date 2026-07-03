@@ -43,6 +43,7 @@
 - `Xor`: two-input XOR gate, reactive via Pin callbacks, truth table Low/High/HighZ
 - `Xnor`: two-input XNOR gate, reactive via Pin callbacks, truth table Low/High/HighZ
 - `SRLatch`: asynchronous SR latch (IDiscrete), reactive via Pin callbacks, forbidden state releases Q/NQ to HighZ, HighZ input holds state
+- `DLatch`: level-sensitive D latch (IDiscrete), transparent when EN=High, holds state when EN=Low or HighZ
 
 ##### signal
 
