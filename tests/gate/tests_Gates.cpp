@@ -358,3 +358,100 @@ TEST_SUITE("gate::Nand")
         CHECK(g.name() == std::string_view("U1"));
     }
 }
+
+TEST_SUITE("gate::Nor")
+{
+    TEST_CASE("Construction creates pins A, B and Y")
+    {
+        Nor g{ Nor::Descriptor{ .name = "U1" } };
+
+        CHECK(g.pins().size() == 3);
+        CHECK(g.pin("A").descriptor().name == std::string_view("A"));
+        CHECK(g.pin("B").descriptor().name == std::string_view("B"));
+        CHECK(g.pin("Y").descriptor().name == std::string_view("Y"));
+    }
+
+    TEST_CASE("Pins A and B are Digital Input, Y is Digital Output")
+    {
+        Nor g{ Nor::Descriptor{ .name = "U1" } };
+
+        CHECK(g.pin("A").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("A").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("B").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("B").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("Y").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("Y").descriptor().direction == Pin::Direction::Output);
+    }
+
+    TEST_CASE("Terminal enum maps to correct pins")
+    {
+        Nor g{ Nor::Descriptor{ .name = "U1" } };
+
+        CHECK(&g.pin(Nor::Terminal::A) == &g.pin("A"));
+        CHECK(&g.pin(Nor::Terminal::B) == &g.pin("B"));
+        CHECK(&g.pin(Nor::Terminal::Y) == &g.pin("Y"));
+    }
+
+    TEST_CASE("Truth table: Low | Low -> High")
+    {
+        Nor g{ Nor::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::Low);
+        g.pin("B").drive<Level>(Level::Low);
+
+        CHECK(g.pin("Y").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Truth table: Low | High -> Low")
+    {
+        Nor g{ Nor::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::Low);
+        g.pin("B").drive<Level>(Level::High);
+
+        CHECK(g.pin("Y").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Truth table: High | Low -> Low")
+    {
+        Nor g{ Nor::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::High);
+        g.pin("B").drive<Level>(Level::Low);
+
+        CHECK(g.pin("Y").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Truth table: High | High -> Low")
+    {
+        Nor g{ Nor::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::High);
+        g.pin("B").drive<Level>(Level::High);
+
+        CHECK(g.pin("Y").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Truth table: HighZ on A -> HighZ")
+    {
+        Nor g{ Nor::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::Low);
+        g.pin("B").drive<Level>(Level::Low);
+        g.pin("A").release();
+
+        CHECK(g.pin("Y").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("Truth table: HighZ on B -> HighZ")
+    {
+        Nor g{ Nor::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::Low);
+        g.pin("B").drive<Level>(Level::Low);
+        g.pin("B").release();
+
+        CHECK(g.pin("Y").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("Component name is stored correctly")
+    {
+        Nor g{ Nor::Descriptor{ .name = "U1" } };
+
+        CHECK(g.name() == std::string_view("U1"));
+    }
+}

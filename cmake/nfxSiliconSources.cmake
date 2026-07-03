@@ -19,6 +19,7 @@ set(NFX_SILICON_SOURCES
     # Gate primitives
     src/gate/And.cpp
     src/gate/Nand.cpp
+    src/gate/Nor.cpp
     src/gate/Not.cpp
     src/gate/Or.cpp
 
