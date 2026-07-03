@@ -26,6 +26,7 @@ set(NFX_SILICON_SOURCES
     src/gate/Xnor.cpp
 
     # Sequential gate primitives
+    src/gate/DFlipFlop.cpp
     src/gate/DLatch.cpp
     src/gate/SRLatch.cpp
 

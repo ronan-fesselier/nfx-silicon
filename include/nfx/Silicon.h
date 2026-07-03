@@ -40,6 +40,7 @@
 #include "nfx/silicon/gate/Xnor.h"
 
 // Sequential gate primitives
+#include "nfx/silicon/gate/DFlipFlop.h"
 #include "nfx/silicon/gate/DLatch.h"
 #include "nfx/silicon/gate/SRLatch.h"
 

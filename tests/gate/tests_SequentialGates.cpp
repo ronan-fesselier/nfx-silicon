@@ -258,3 +258,161 @@ TEST_SUITE("gate::DLatch")
         CHECK(g.name() == std::string_view("U1"));
     }
 }
+
+TEST_SUITE("gate::DFlipFlop")
+{
+    TEST_CASE("Construction creates pins D, CLK, CLR, PRE, Q and NQ")
+    {
+        DFlipFlop g{ DFlipFlop::Descriptor{ .name = "U1" } };
+
+        CHECK(g.pins().size() == 6);
+        CHECK(g.pin("D").descriptor().name == std::string_view("D"));
+        CHECK(g.pin("CLK").descriptor().name == std::string_view("CLK"));
+        CHECK(g.pin("CLR").descriptor().name == std::string_view("CLR"));
+        CHECK(g.pin("PRE").descriptor().name == std::string_view("PRE"));
+        CHECK(g.pin("Q").descriptor().name == std::string_view("Q"));
+        CHECK(g.pin("NQ").descriptor().name == std::string_view("NQ"));
+    }
+
+    TEST_CASE("Pin kinds and directions are correct")
+    {
+        DFlipFlop g{ DFlipFlop::Descriptor{ .name = "U1" } };
+
+        CHECK(g.pin("D").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("D").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("CLK").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("CLK").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("CLR").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("CLR").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("PRE").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("PRE").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("Q").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("Q").descriptor().direction == Pin::Direction::Output);
+        CHECK(g.pin("NQ").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("NQ").descriptor().direction == Pin::Direction::Output);
+    }
+
+    TEST_CASE("Terminal enum maps to correct pins")
+    {
+        DFlipFlop g{ DFlipFlop::Descriptor{ .name = "U1" } };
+
+        CHECK(&g.pin(DFlipFlop::Terminal::D) == &g.pin("D"));
+        CHECK(&g.pin(DFlipFlop::Terminal::CLK) == &g.pin("CLK"));
+        CHECK(&g.pin(DFlipFlop::Terminal::CLR) == &g.pin("CLR"));
+        CHECK(&g.pin(DFlipFlop::Terminal::PRE) == &g.pin("PRE"));
+        CHECK(&g.pin(DFlipFlop::Terminal::Q) == &g.pin("Q"));
+        CHECK(&g.pin(DFlipFlop::Terminal::NQ) == &g.pin("NQ"));
+    }
+
+    TEST_CASE("Rising edge samples D=High -> Q=High NQ=Low")
+    {
+        DFlipFlop g{ DFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::High);
+        g.pin("PRE").drive<Level>(Level::High);
+        g.pin("D").drive<Level>(Level::High);
+
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+        CHECK(g.pin("NQ").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Rising edge samples D=Low -> Q=Low NQ=High")
+    {
+        DFlipFlop g{ DFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::High);
+        g.pin("PRE").drive<Level>(Level::High);
+        g.pin("D").drive<Level>(Level::Low);
+
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+
+        CHECK(g.pin("Q").read<Level>() == Level::Low);
+        CHECK(g.pin("NQ").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("No rising edge: Q holds state")
+    {
+        DFlipFlop g{ DFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::High);
+        g.pin("PRE").drive<Level>(Level::High);
+        g.pin("D").drive<Level>(Level::High);
+
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+
+        g.pin("D").drive<Level>(Level::Low);
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+        CHECK(g.pin("NQ").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Async CLR=Low -> Q=Low NQ=High regardless of CLK")
+    {
+        DFlipFlop g{ DFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::High);
+        g.pin("PRE").drive<Level>(Level::High);
+        g.pin("D").drive<Level>(Level::High);
+
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+
+        g.pin("CLR").drive<Level>(Level::Low);
+
+        CHECK(g.pin("Q").read<Level>() == Level::Low);
+        CHECK(g.pin("NQ").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Async PRE=Low -> Q=High NQ=Low regardless of CLK")
+    {
+        DFlipFlop g{ DFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::High);
+        g.pin("PRE").drive<Level>(Level::High);
+        g.pin("D").drive<Level>(Level::Low);
+
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+        CHECK(g.pin("Q").read<Level>() == Level::Low);
+
+        g.pin("PRE").drive<Level>(Level::Low);
+
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+        CHECK(g.pin("NQ").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Forbidden state CLR=Low PRE=Low -> Q=HighZ NQ=HighZ")
+    {
+        DFlipFlop g{ DFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::Low);
+        g.pin("PRE").drive<Level>(Level::Low);
+
+        CHECK(g.pin("Q").read<Level>() == Level::HighZ);
+        CHECK(g.pin("NQ").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("reset() drives Q=Low NQ=High")
+    {
+        DFlipFlop g{ DFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::High);
+        g.pin("PRE").drive<Level>(Level::High);
+        g.pin("D").drive<Level>(Level::High);
+
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+
+        g.reset();
+
+        CHECK(g.pin("Q").read<Level>() == Level::Low);
+        CHECK(g.pin("NQ").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Component name is stored correctly")
+    {
+        DFlipFlop g{ DFlipFlop::Descriptor{ .name = "U1" } };
+
+        CHECK(g.name() == std::string_view("U1"));
+    }
+}
