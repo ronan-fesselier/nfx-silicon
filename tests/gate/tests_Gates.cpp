@@ -261,3 +261,100 @@ TEST_SUITE("gate::Or")
         CHECK(g.name() == std::string_view("U1"));
     }
 }
+
+TEST_SUITE("gate::Nand")
+{
+    TEST_CASE("Construction creates pins A, B and Y")
+    {
+        Nand g{ Nand::Descriptor{ .name = "U1" } };
+
+        CHECK(g.pins().size() == 3);
+        CHECK(g.pin("A").descriptor().name == std::string_view("A"));
+        CHECK(g.pin("B").descriptor().name == std::string_view("B"));
+        CHECK(g.pin("Y").descriptor().name == std::string_view("Y"));
+    }
+
+    TEST_CASE("Pins A and B are Digital Input, Y is Digital Output")
+    {
+        Nand g{ Nand::Descriptor{ .name = "U1" } };
+
+        CHECK(g.pin("A").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("A").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("B").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("B").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("Y").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("Y").descriptor().direction == Pin::Direction::Output);
+    }
+
+    TEST_CASE("Terminal enum maps to correct pins")
+    {
+        Nand g{ Nand::Descriptor{ .name = "U1" } };
+
+        CHECK(&g.pin(Nand::Terminal::A) == &g.pin("A"));
+        CHECK(&g.pin(Nand::Terminal::B) == &g.pin("B"));
+        CHECK(&g.pin(Nand::Terminal::Y) == &g.pin("Y"));
+    }
+
+    TEST_CASE("Truth table: Low & Low -> High")
+    {
+        Nand g{ Nand::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::Low);
+        g.pin("B").drive<Level>(Level::Low);
+
+        CHECK(g.pin("Y").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Truth table: Low & High -> High")
+    {
+        Nand g{ Nand::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::Low);
+        g.pin("B").drive<Level>(Level::High);
+
+        CHECK(g.pin("Y").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Truth table: High & Low -> High")
+    {
+        Nand g{ Nand::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::High);
+        g.pin("B").drive<Level>(Level::Low);
+
+        CHECK(g.pin("Y").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Truth table: High & High -> Low")
+    {
+        Nand g{ Nand::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::High);
+        g.pin("B").drive<Level>(Level::High);
+
+        CHECK(g.pin("Y").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Truth table: HighZ on A -> HighZ")
+    {
+        Nand g{ Nand::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::High);
+        g.pin("B").drive<Level>(Level::High);
+        g.pin("A").release();
+
+        CHECK(g.pin("Y").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("Truth table: HighZ on B -> HighZ")
+    {
+        Nand g{ Nand::Descriptor{ .name = "U1" } };
+        g.pin("A").drive<Level>(Level::High);
+        g.pin("B").drive<Level>(Level::High);
+        g.pin("B").release();
+
+        CHECK(g.pin("Y").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("Component name is stored correctly")
+    {
+        Nand g{ Nand::Descriptor{ .name = "U1" } };
+
+        CHECK(g.name() == std::string_view("U1"));
+    }
+}
