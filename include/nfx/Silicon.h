@@ -50,6 +50,7 @@
 #include "nfx/silicon/gate/sn74xxx/LS08.h"
 #include "nfx/silicon/gate/sn74xxx/LS74.h"
 #include "nfx/silicon/gate/sn74xxx/LS138.h"
+#include "nfx/silicon/gate/sn74xxx/LS139.h"
 #include "nfx/silicon/gate/sn74xxx/LS373.h"
 #include "nfx/silicon/gate/sn74xxx/LS374.h"
 
