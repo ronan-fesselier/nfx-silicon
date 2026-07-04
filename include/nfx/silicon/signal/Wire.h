@@ -95,6 +95,8 @@ namespace nfx::silicon::signal
             Voltage voltage{ std::nullopt };
         } m_state;
 
+        Pin* m_bidirTrigger{ nullptr };
+
         void resolve();
     };
 

@@ -169,4 +169,46 @@ TEST_SUITE("Signal::Wire")
         out.drive<Level>(Level::High);
         CHECK(bidir.read<Level>() == Level::High);
     }
+
+    TEST_CASE("Bidirectional echo does not conflict when Output driver changes value")
+    {
+        Pin bidir{ Pin::Descriptor{
+            .name = "BD", .kind = Pin::Kind::Digital, .direction = Pin::Direction::Bidirectional } };
+        Pin out(Pin::Descriptor{ .name = "OUT", .kind = Pin::Kind::Digital, .direction = Pin::Direction::Output });
+        Wire wire{ Wire::Descriptor{
+            .name = "W1", .kind = Pin::Kind::Digital, .resolution = Wire::Resolution::PushPull } };
+
+        wire.attach(bidir);
+        wire.attach(out);
+
+        out.drive<Level>(Level::High);
+        CHECK(bidir.read<Level>() == Level::High);
+
+        out.drive<Level>(Level::Low); // must not assert/conflict
+        CHECK(bidir.read<Level>() == Level::Low);
+
+        out.drive<Level>(Level::High);
+        CHECK(bidir.read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Bidirectional pin drives Wire when explicitly driven by component")
+    {
+        Pin bidir{ Pin::Descriptor{
+            .name = "BD", .kind = Pin::Kind::Digital, .direction = Pin::Direction::Bidirectional } };
+        Pin in(Pin::Descriptor{ .name = "IN", .kind = Pin::Kind::Digital, .direction = Pin::Direction::Input });
+        Wire wire{ Wire::Descriptor{
+            .name = "W1", .kind = Pin::Kind::Digital, .resolution = Wire::Resolution::PushPull } };
+
+        wire.attach(bidir);
+        wire.attach(in);
+
+        bidir.drive<Level>(Level::High);
+        CHECK(in.read<Level>() == Level::High);
+
+        bidir.drive<Level>(Level::Low);
+        CHECK(in.read<Level>() == Level::Low);
+
+        bidir.release();
+        CHECK(in.read<Level>() == Level::HighZ);
+    }
 }

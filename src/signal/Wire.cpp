@@ -39,7 +39,18 @@ namespace nfx::silicon::signal
             m_connections.drivers.push_back(&pin);
             if (pin.descriptor().kind == Pin::Kind::Digital)
             {
-                pin.connect<Level>([this](Level) { resolve(); });
+                if (direction == Pin::Direction::Bidirectional)
+                {
+                    pin.connect<Level>([this, &pin](Level) {
+                        m_bidirTrigger = &pin;
+                        resolve();
+                        m_bidirTrigger = nullptr;
+                    });
+                }
+                else
+                {
+                    pin.connect<Level>([this](Level) { resolve(); });
+                }
             }
             else
             {
@@ -96,6 +107,14 @@ namespace nfx::silicon::signal
         // Digital resolution
         Level resolved = Level::HighZ;
 
+        auto activeLevel = [this](Pin* pin) -> Level {
+            if (pin->descriptor().direction == Pin::Direction::Bidirectional && pin != m_bidirTrigger)
+            {
+                return Level::HighZ;
+            }
+            return pin->read<Level>();
+        };
+
         switch (m_descriptor.resolution)
         {
             case Resolution::PushPull:
@@ -104,7 +123,7 @@ namespace nfx::silicon::signal
                 Level firstActive = Level::HighZ;
                 for (auto* pin : m_connections.drivers)
                 {
-                    Level l = pin->read<Level>();
+                    Level l = activeLevel(pin);
                     if (l != Level::HighZ)
                     {
                         if (activeDrivers > 0)
@@ -132,7 +151,7 @@ namespace nfx::silicon::signal
                 resolved = Level::High;
                 for (auto* pin : m_connections.drivers)
                 {
-                    Level l = pin->read<Level>();
+                    Level l = activeLevel(pin);
                     if (l == Level::Low)
                     {
                         resolved = Level::Low;
@@ -156,7 +175,7 @@ namespace nfx::silicon::signal
                 resolved = Level::Low;
                 for (auto* pin : m_connections.drivers)
                 {
-                    Level l = pin->read<Level>();
+                    Level l = activeLevel(pin);
                     if (l == Level::High)
                     {
                         resolved = Level::High;
