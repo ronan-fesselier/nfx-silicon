@@ -56,6 +56,7 @@
 - `sn74/LS74`: SN74LS74A dual edge-triggered D flip-flop (IDiscrete), DIP-14 pinout, VCC-gated outputs (HighZ when unpowered), async CLR/PRE active Low, forbidden state releases Q/NQ to HighZ
 - `sn74/LS138`: SN74LS138 3-to-8 line decoder/demultiplexer (IPassive), DIP-16 pinout, VCC-gated outputs (HighZ when unpowered), active-Low outputs, enable logic G1·/G2A·/G2B
 - `sn74/LS139`: SN74LS139 dual 2-to-4 line decoder/demultiplexer (IPassive), DIP-16 pinout, VCC-gated outputs (HighZ when unpowered), active-Low outputs and enable (/1G, /2G), two independent decoders
+- `sn74/LS245`: SN74LS245 octal bus transceiver with 3-STATE outputs (IPassive), DIP-20 pinout, VCC-gated outputs (HighZ when unpowered), bidirectional A/B channels, direction controlled by DIR, isolation via /OE
 - `sn74/LS373`: SN74LS373 octal transparent latch (IDiscrete), DIP-20 pinout, VCC-gated outputs (HighZ when unpowered), OC active Low, C (latch enable) High transparent / Low latched, 3-STATE outputs
 - `sn74/LS374`: SN74LS374 octal D-type edge-triggered flip-flop (IDiscrete), DIP-20 pinout, VCC-gated outputs (HighZ when unpowered), OC active Low, CLOCK rising edge triggered, 3-STATE outputs
 
