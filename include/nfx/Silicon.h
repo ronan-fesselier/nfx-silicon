@@ -25,6 +25,8 @@
 #include "nfx/silicon/discrete/Diode.h"
 #include "nfx/silicon/discrete/LED.h"
 
+#include "nfx/silicon/discrete/Quartz.h"
+
 #include "nfx/silicon/discrete/PowerSupply.h"
 
 #include "nfx/silicon/discrete/PushButton.h"

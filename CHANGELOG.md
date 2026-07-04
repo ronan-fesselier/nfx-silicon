@@ -32,6 +32,7 @@
 - `Switch`: two-terminal SPST toggle switch modeled as a variable contact resistance
 - `PushButton`: two-terminal momentary contact (NormallyOpen/NormallyClosed) modeled as a variable contact resistance
 - `LED`: two-terminal indicator with Color presets and resolved forward voltage
+- `Quartz`: passive crystal frequency reference (IPassive), two Analog Bidirectional terminals (X1, X2), frequencyHz stored in descriptor
 
 ##### gate
 
@@ -83,6 +84,7 @@
 - `tests_Diode`: unit tests for Diode construction, pins, Terminal mapping, and forward/Shockley parameters
 - `tests_Switches`: unit tests for Switch and PushButton construction, pins, contact state, and R() values
 - `tests_LED`: unit tests for LED construction, pins, Terminal mapping, Color presets, and Shockley parameters
+- `tests_Quartz`: unit tests for Quartz construction, pins, Terminal mapping, frequencyHz, descriptor, and name
 
 ##### gate
 

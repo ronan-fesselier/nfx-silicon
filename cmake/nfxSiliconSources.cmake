@@ -11,6 +11,8 @@ set(NFX_SILICON_SOURCES
     src/discrete/Diode.cpp
     src/discrete/LED.cpp
 
+    src/discrete/Quartz.cpp
+
     src/discrete/PowerSupply.cpp
 
     src/discrete/PushButton.cpp
