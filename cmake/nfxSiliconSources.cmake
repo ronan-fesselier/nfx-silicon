@@ -37,6 +37,7 @@ set(NFX_SILICON_SOURCES
     src/gate/sn74/LS00.cpp
     src/gate/sn74/LS04.cpp
     src/gate/sn74/LS08.cpp
+    src/gate/sn74/LS32.cpp
     src/gate/sn74/LS74.cpp
     src/gate/sn74/LS138.cpp
     src/gate/sn74/LS139.cpp
