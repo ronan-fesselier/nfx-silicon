@@ -35,6 +35,8 @@
 
 ##### gate
 
+###### Primitives
+
 - `Not`: single-input inverter gate, reactive via Pin callback, truth table Low/High/HighZ
 - `And`: two-input AND gate, reactive via Pin callbacks, truth table Low/High/HighZ
 - `Or`: two-input OR gate, reactive via Pin callbacks, truth table Low/High/HighZ
@@ -46,6 +48,10 @@
 - `DLatch`: level-sensitive D latch (IDiscrete), transparent when EN=High, holds state when EN=Low or HighZ
 - `DFlipFlop`: edge-triggered D flip-flop (IDiscrete), CLK rising edge detected via Pin callback, async CLR/PRE via Pin callbacks, forbidden state releases Q/NQ to HighZ
 - `JKFlipFlop`: edge-triggered JK flip-flop (IDiscrete), CLK rising edge detected via Pin callback, async CLR/PRE via Pin callbacks, toggle on J=High K=High, forbidden state releases Q/NQ to HighZ
+
+###### SN74 packages
+
+- `sn74/LS74`: SN74LS74A dual edge-triggered D flip-flop (IDiscrete), DIP-14 pinout, VCC-gated outputs (HighZ when unpowered), async CLR/PRE active Low, forbidden state releases Q/NQ to HighZ
 
 ##### signal
 
@@ -75,6 +81,7 @@
 
 - `tests_Gates`: unit tests for Not, And, Or, Nand, Nor, Xor, and Xnor gates (construction, pins, truth table, Terminal enum)
 - `tests_SequentialGates`: unit tests for SRLatch, DLatch, DFlipFlop, and JKFlipFlop (construction, pins, truth table, hold, forbidden state, async CLR/PRE, toggle, reset, Terminal enum)
+- `tests_74xx`: unit tests for LS74 (construction, DIP-14 pinout, Terminal enum, VCC power gating, rising edge sampling, async CLR/PRE, forbidden state, reset, FF independence)
 
 #### Samples
 

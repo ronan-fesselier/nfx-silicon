@@ -45,6 +45,9 @@
 #include "nfx/silicon/gate/JKFlipFlop.h"
 #include "nfx/silicon/gate/SRLatch.h"
 
+// 74xx packages
+#include "nfx/silicon/gate/sn74xxx/LS74.h"
+
 // Signal layer
 #include "nfx/silicon/signal/Bus.h"
 #include "nfx/silicon/signal/Pin.h"

@@ -31,6 +31,9 @@ set(NFX_SILICON_SOURCES
     src/gate/JKFlipFlop.cpp
     src/gate/SRLatch.cpp
 
+    # 74xx packages
+    src/gate/sn74/LS74.cpp
+
     # Signal layer
     src/signal/Bus.cpp
     src/signal/Pin.cpp
