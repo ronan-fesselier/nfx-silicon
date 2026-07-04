@@ -28,6 +28,7 @@ set(NFX_SILICON_SOURCES
     # Sequential gate primitives
     src/gate/DFlipFlop.cpp
     src/gate/DLatch.cpp
+    src/gate/JKFlipFlop.cpp
     src/gate/SRLatch.cpp
 
     # Signal layer

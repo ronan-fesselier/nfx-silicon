@@ -45,6 +45,7 @@
 - `SRLatch`: asynchronous SR latch (IDiscrete), reactive via Pin callbacks, forbidden state releases Q/NQ to HighZ, HighZ input holds state
 - `DLatch`: level-sensitive D latch (IDiscrete), transparent when EN=High, holds state when EN=Low or HighZ
 - `DFlipFlop`: edge-triggered D flip-flop (IDiscrete), CLK rising edge detected via Pin callback, async CLR/PRE via Pin callbacks, forbidden state releases Q/NQ to HighZ
+- `JKFlipFlop`: edge-triggered JK flip-flop (IDiscrete), CLK rising edge detected via Pin callback, async CLR/PRE via Pin callbacks, toggle on J=High K=High, forbidden state releases Q/NQ to HighZ
 
 ##### signal
 
@@ -73,7 +74,7 @@
 ##### gate
 
 - `tests_Gates`: unit tests for Not, And, Or, Nand, Nor, Xor, and Xnor gates (construction, pins, truth table, Terminal enum)
-- `tests_SequentialGates`: unit tests for SRLatch, DLatch, and DFlipFlop (construction, pins, truth table, hold, forbidden state, async CLR/PRE, reset, Terminal enum)
+- `tests_SequentialGates`: unit tests for SRLatch, DLatch, DFlipFlop, and JKFlipFlop (construction, pins, truth table, hold, forbidden state, async CLR/PRE, toggle, reset, Terminal enum)
 
 #### Samples
 

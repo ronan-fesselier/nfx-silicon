@@ -416,3 +416,204 @@ TEST_SUITE("gate::DFlipFlop")
         CHECK(g.name() == std::string_view("U1"));
     }
 }
+
+TEST_SUITE("gate::JKFlipFlop")
+{
+    TEST_CASE("Construction creates pins J, K, CLK, CLR, PRE, Q and NQ")
+    {
+        JKFlipFlop g{ JKFlipFlop::Descriptor{ .name = "U1" } };
+
+        CHECK(g.pins().size() == 7);
+        CHECK(g.pin("J").descriptor().name == std::string_view("J"));
+        CHECK(g.pin("K").descriptor().name == std::string_view("K"));
+        CHECK(g.pin("CLK").descriptor().name == std::string_view("CLK"));
+        CHECK(g.pin("CLR").descriptor().name == std::string_view("CLR"));
+        CHECK(g.pin("PRE").descriptor().name == std::string_view("PRE"));
+        CHECK(g.pin("Q").descriptor().name == std::string_view("Q"));
+        CHECK(g.pin("NQ").descriptor().name == std::string_view("NQ"));
+    }
+
+    TEST_CASE("Pin kinds and directions are correct")
+    {
+        JKFlipFlop g{ JKFlipFlop::Descriptor{ .name = "U1" } };
+
+        CHECK(g.pin("J").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("J").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("K").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("K").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("CLK").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("CLK").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("CLR").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("CLR").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("PRE").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("PRE").descriptor().direction == Pin::Direction::Input);
+        CHECK(g.pin("Q").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("Q").descriptor().direction == Pin::Direction::Output);
+        CHECK(g.pin("NQ").descriptor().kind == Pin::Kind::Digital);
+        CHECK(g.pin("NQ").descriptor().direction == Pin::Direction::Output);
+    }
+
+    TEST_CASE("Terminal enum maps to correct pins")
+    {
+        JKFlipFlop g{ JKFlipFlop::Descriptor{ .name = "U1" } };
+
+        CHECK(&g.pin(JKFlipFlop::Terminal::J) == &g.pin("J"));
+        CHECK(&g.pin(JKFlipFlop::Terminal::K) == &g.pin("K"));
+        CHECK(&g.pin(JKFlipFlop::Terminal::CLK) == &g.pin("CLK"));
+        CHECK(&g.pin(JKFlipFlop::Terminal::CLR) == &g.pin("CLR"));
+        CHECK(&g.pin(JKFlipFlop::Terminal::PRE) == &g.pin("PRE"));
+        CHECK(&g.pin(JKFlipFlop::Terminal::Q) == &g.pin("Q"));
+        CHECK(&g.pin(JKFlipFlop::Terminal::NQ) == &g.pin("NQ"));
+    }
+
+    TEST_CASE("Rising edge J=High K=Low -> set Q=High NQ=Low")
+    {
+        JKFlipFlop g{ JKFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::High);
+        g.pin("PRE").drive<Level>(Level::High);
+        g.pin("J").drive<Level>(Level::High);
+        g.pin("K").drive<Level>(Level::Low);
+
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+        CHECK(g.pin("NQ").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Rising edge J=Low K=High -> reset Q=Low NQ=High")
+    {
+        JKFlipFlop g{ JKFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::High);
+        g.pin("PRE").drive<Level>(Level::High);
+        g.pin("J").drive<Level>(Level::Low);
+        g.pin("K").drive<Level>(Level::High);
+
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+
+        CHECK(g.pin("Q").read<Level>() == Level::Low);
+        CHECK(g.pin("NQ").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Rising edge J=Low K=Low -> hold")
+    {
+        JKFlipFlop g{ JKFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::High);
+        g.pin("PRE").drive<Level>(Level::High);
+
+        // Set first
+        g.pin("J").drive<Level>(Level::High);
+        g.pin("K").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+
+        // Hold
+        g.pin("J").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+        CHECK(g.pin("NQ").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Rising edge J=High K=High -> toggle")
+    {
+        JKFlipFlop g{ JKFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::High);
+        g.pin("PRE").drive<Level>(Level::High);
+
+        // Set Q=High first
+        g.pin("J").drive<Level>(Level::High);
+        g.pin("K").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+
+        // Toggle -> Q=Low
+        g.pin("J").drive<Level>(Level::High);
+        g.pin("K").drive<Level>(Level::High);
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+        CHECK(g.pin("Q").read<Level>() == Level::Low);
+        CHECK(g.pin("NQ").read<Level>() == Level::High);
+
+        // Toggle again -> Q=High
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+        CHECK(g.pin("NQ").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Async CLR=Low -> Q=Low NQ=High regardless of CLK")
+    {
+        JKFlipFlop g{ JKFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::High);
+        g.pin("PRE").drive<Level>(Level::High);
+        g.pin("J").drive<Level>(Level::High);
+        g.pin("K").drive<Level>(Level::Low);
+
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+
+        g.pin("CLR").drive<Level>(Level::Low);
+
+        CHECK(g.pin("Q").read<Level>() == Level::Low);
+        CHECK(g.pin("NQ").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Async PRE=Low -> Q=High NQ=Low regardless of CLK")
+    {
+        JKFlipFlop g{ JKFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::High);
+        g.pin("PRE").drive<Level>(Level::High);
+        g.pin("J").drive<Level>(Level::Low);
+        g.pin("K").drive<Level>(Level::High);
+
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+        CHECK(g.pin("Q").read<Level>() == Level::Low);
+
+        g.pin("PRE").drive<Level>(Level::Low);
+
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+        CHECK(g.pin("NQ").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Forbidden state CLR=Low PRE=Low -> Q=HighZ NQ=HighZ")
+    {
+        JKFlipFlop g{ JKFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::Low);
+        g.pin("PRE").drive<Level>(Level::Low);
+
+        CHECK(g.pin("Q").read<Level>() == Level::HighZ);
+        CHECK(g.pin("NQ").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("reset() drives Q=Low NQ=High")
+    {
+        JKFlipFlop g{ JKFlipFlop::Descriptor{ .name = "U1" } };
+        g.pin("CLR").drive<Level>(Level::High);
+        g.pin("PRE").drive<Level>(Level::High);
+        g.pin("J").drive<Level>(Level::High);
+        g.pin("K").drive<Level>(Level::Low);
+
+        g.pin("CLK").drive<Level>(Level::Low);
+        g.pin("CLK").drive<Level>(Level::High);
+        CHECK(g.pin("Q").read<Level>() == Level::High);
+
+        g.reset();
+
+        CHECK(g.pin("Q").read<Level>() == Level::Low);
+        CHECK(g.pin("NQ").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Component name is stored correctly")
+    {
+        JKFlipFlop g{ JKFlipFlop::Descriptor{ .name = "U1" } };
+
+        CHECK(g.name() == std::string_view("U1"));
+    }
+}
