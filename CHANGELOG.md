@@ -95,6 +95,7 @@
 - `half-adder`: half adder sample wiring Xor and And gates via Pin and Wire (S = A ^ B, C = A & B)
 - `adder`: full adder sample wiring five gates via Pin and Wire (S = A ^ B ^ Cin, Cout = (A & B) | (Cin & (A ^ B)))
 - `register-adder`: scalable N-bit ripple carry adder built from N full adder cells
+- `bidirectional-bus-driver`: SN74LS374 datasheet typical application: two LS374 transferring data between two 8-bit buses, clock-gated via LS08, output control inverted via LS04
 
 ### Changed
 
