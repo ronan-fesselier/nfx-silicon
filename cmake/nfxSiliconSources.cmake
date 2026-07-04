@@ -33,6 +33,7 @@ set(NFX_SILICON_SOURCES
 
     # 74xx packages
     src/gate/sn74/LS74.cpp
+    src/gate/sn74/LS373.cpp
 
     # Signal layer
     src/signal/Bus.cpp

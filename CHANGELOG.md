@@ -52,6 +52,7 @@
 ###### SN74 packages
 
 - `sn74/LS74`: SN74LS74A dual edge-triggered D flip-flop (IDiscrete), DIP-14 pinout, VCC-gated outputs (HighZ when unpowered), async CLR/PRE active Low, forbidden state releases Q/NQ to HighZ
+- `sn74/LS373`: SN74LS373 octal transparent latch (IDiscrete), DIP-20 pinout, VCC-gated outputs (HighZ when unpowered), OC active Low, C (latch enable) High transparent / Low latched, 3-STATE outputs
 
 ##### signal
 
@@ -81,7 +82,7 @@
 
 - `tests_Gates`: unit tests for Not, And, Or, Nand, Nor, Xor, and Xnor gates (construction, pins, truth table, Terminal enum)
 - `tests_SequentialGates`: unit tests for SRLatch, DLatch, DFlipFlop, and JKFlipFlop (construction, pins, truth table, hold, forbidden state, async CLR/PRE, toggle, reset, Terminal enum)
-- `tests_74xx`: unit tests for LS74 (construction, DIP-14 pinout, Terminal enum, VCC power gating, rising edge sampling, async CLR/PRE, forbidden state, reset, FF independence)
+- `tests_74xx`: unit tests for SN74LS74, and SN74LS373 (construction, DIP pinout, Terminal enum, VCC power gating, OC/CLK/C behavior, async controls, forbidden states, reset, independence)E, forbidden state, reset, FF independence)
 
 #### Samples
 
