@@ -47,6 +47,9 @@
 #include "nfx/silicon/gate/JKFlipFlop.h"
 #include "nfx/silicon/gate/SRLatch.h"
 
+// CD4xxx packages
+#include "nfx/silicon/gate/cd4xxx/CD4011B.h"
+
 // 74xx packages
 #include "nfx/silicon/gate/sn74xxx/LS00.h"
 #include "nfx/silicon/gate/sn74xxx/LS04.h"

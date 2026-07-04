@@ -33,6 +33,9 @@ set(NFX_SILICON_SOURCES
     src/gate/JKFlipFlop.cpp
     src/gate/SRLatch.cpp
 
+    # CD4xxx packages
+    src/gate/cd4xxx/CD4011B.cpp
+
     # 74xx packages
     src/gate/sn74/LS00.cpp
     src/gate/sn74/LS04.cpp

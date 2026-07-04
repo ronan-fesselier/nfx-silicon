@@ -50,6 +50,10 @@
 - `DFlipFlop`: edge-triggered D flip-flop (IDiscrete), CLK rising edge detected via Pin callback, async CLR/PRE via Pin callbacks, forbidden state releases Q/NQ to HighZ
 - `JKFlipFlop`: edge-triggered JK flip-flop (IDiscrete), CLK rising edge detected via Pin callback, async CLR/PRE via Pin callbacks, toggle on J=High K=High, forbidden state releases Q/NQ to HighZ
 
+###### CD4000 packages (CMOS)
+
+- `cd4xxx/CD4011B`: CD4011B CMOS quad 2-input NAND gate (IPassive), DIP-14 pinout, VDD-gated outputs (HighZ when unpowered), four independent Nand gates, pin names per RCA datasheet (A/B/C/D/E/F/G/H/J/K/L/M), 3V-15V supply range
+
 ###### SN74 packages
 
 - `sn74/LS00`: SN74LS00 quad 2-input NAND gate (IPassive), DIP-14 pinout, VCC-gated outputs (HighZ when unpowered), four independent Nand gates
@@ -93,6 +97,7 @@
 
 - `tests_Gates`: unit tests for Not, And, Or, Nand, Nor, Xor, and Xnor gates (construction, pins, truth table, Terminal enum)
 - `tests_SequentialGates`: unit tests for SRLatch, DLatch, DFlipFlop, and JKFlipFlop (construction, pins, truth table, hold, forbidden state, async CLR/PRE, toggle, reset, Terminal enum)
+- `tests_cd4xxx`: unit tests for CD4011B (construction, DIP-14 pin names, Terminal enum, full truth table all four gates, HighZ propagation, gate independence, VDD removal, VDD below range, component name)
 - `tests_74xx`: unit tests for SN74LS74, SN74LS373, SN74LS374, SN74LS04... (construction, DIP pinout, Terminal enum, VCC power gating, OC/CLK/C behavior, async controls, forbidden states, reset, independence)
 
 #### Samples
