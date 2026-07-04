@@ -533,3 +533,183 @@ TEST_SUITE("gate::sn74::LS373")
         CHECK(u.name() == std::string_view("U1"));
     }
 }
+
+TEST_SUITE("gate::sn74::LS374")
+{
+    TEST_CASE("Construction creates 20 pins")
+    {
+        LS374 u{ LS374::Descriptor{ .name = "U1" } };
+        CHECK(u.pins().size() == 20);
+    }
+
+    TEST_CASE("Pin names match DIP-20 datasheet")
+    {
+        LS374 u{ LS374::Descriptor{ .name = "U1" } };
+        CHECK(u.pin("OC").descriptor().name == std::string_view("OC"));
+        CHECK(u.pin("1Q").descriptor().name == std::string_view("1Q"));
+        CHECK(u.pin("1D").descriptor().name == std::string_view("1D"));
+        CHECK(u.pin("2D").descriptor().name == std::string_view("2D"));
+        CHECK(u.pin("2Q").descriptor().name == std::string_view("2Q"));
+        CHECK(u.pin("3Q").descriptor().name == std::string_view("3Q"));
+        CHECK(u.pin("3D").descriptor().name == std::string_view("3D"));
+        CHECK(u.pin("4D").descriptor().name == std::string_view("4D"));
+        CHECK(u.pin("4Q").descriptor().name == std::string_view("4Q"));
+        CHECK(u.pin("GND").descriptor().name == std::string_view("GND"));
+
+        CHECK(u.pin("CLK").descriptor().name == std::string_view("CLK"));
+        CHECK(u.pin("5Q").descriptor().name == std::string_view("5Q"));
+        CHECK(u.pin("5D").descriptor().name == std::string_view("5D"));
+        CHECK(u.pin("6D").descriptor().name == std::string_view("6D"));
+        CHECK(u.pin("6Q").descriptor().name == std::string_view("6Q"));
+        CHECK(u.pin("7Q").descriptor().name == std::string_view("7Q"));
+        CHECK(u.pin("7D").descriptor().name == std::string_view("7D"));
+        CHECK(u.pin("8D").descriptor().name == std::string_view("8D"));
+        CHECK(u.pin("8Q").descriptor().name == std::string_view("8Q"));
+        CHECK(u.pin("VCC").descriptor().name == std::string_view("VCC"));
+    }
+
+    TEST_CASE("Rising edge samples D=High -> Q=High")
+    {
+        LS374 u{ LS374::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(5.0f);
+        u.pin("OC").drive<Level>(Level::Low);
+        u.pin("1D").drive<Level>(Level::High);
+
+        u.pin("CLK").drive<Level>(Level::Low);
+        u.pin("CLK").drive<Level>(Level::High);
+
+        CHECK(u.pin("1Q").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("Rising edge samples D=Low -> Q=Low")
+    {
+        LS374 u{ LS374::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(5.0f);
+        u.pin("OC").drive<Level>(Level::Low);
+        u.pin("1D").drive<Level>(Level::Low);
+
+        u.pin("CLK").drive<Level>(Level::Low);
+        u.pin("CLK").drive<Level>(Level::High);
+
+        CHECK(u.pin("1Q").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("No rising edge: Q holds state")
+    {
+        LS374 u{ LS374::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(5.0f);
+        u.pin("OC").drive<Level>(Level::Low);
+
+        // sample High
+        u.pin("1D").drive<Level>(Level::High);
+        u.pin("CLK").drive<Level>(Level::Low);
+        u.pin("CLK").drive<Level>(Level::High);
+        CHECK(u.pin("1Q").read<Level>() == Level::High);
+
+        // CLK stays High -> no new sample
+        u.pin("1D").drive<Level>(Level::Low);
+        CHECK(u.pin("1Q").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("OC=High forces outputs to HighZ")
+    {
+        LS374 u{ LS374::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(5.0f);
+        u.pin("OC").drive<Level>(Level::Low);
+        u.pin("1D").drive<Level>(Level::High);
+        u.pin("CLK").drive<Level>(Level::Low);
+        u.pin("CLK").drive<Level>(Level::High);
+        CHECK(u.pin("1Q").read<Level>() == Level::High);
+
+        u.pin("OC").drive<Level>(Level::High);
+        CHECK(u.pin("1Q").read<Level>() == Level::HighZ);
+        CHECK(u.pin("2Q").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("OC restored to Low after disable: outputs reflect sampled values")
+    {
+        LS374 u{ LS374::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(5.0f);
+        u.pin("OC").drive<Level>(Level::Low);
+        u.pin("1D").drive<Level>(Level::High);
+        u.pin("2D").drive<Level>(Level::Low);
+        u.pin("CLK").drive<Level>(Level::Low);
+        u.pin("CLK").drive<Level>(Level::High);
+
+        u.pin("OC").drive<Level>(Level::High);
+        CHECK(u.pin("1Q").read<Level>() == Level::HighZ);
+
+        u.pin("OC").drive<Level>(Level::Low);
+        CHECK(u.pin("1Q").read<Level>() == Level::High);
+        CHECK(u.pin("2Q").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("All eight FFs are independent")
+    {
+        LS374 u{ LS374::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(5.0f);
+        u.pin("OC").drive<Level>(Level::Low);
+
+        u.pin("1D").drive<Level>(Level::High);
+        u.pin("2D").drive<Level>(Level::Low);
+        u.pin("3D").drive<Level>(Level::High);
+        u.pin("4D").drive<Level>(Level::Low);
+        u.pin("5D").drive<Level>(Level::High);
+        u.pin("6D").drive<Level>(Level::Low);
+        u.pin("7D").drive<Level>(Level::High);
+        u.pin("8D").drive<Level>(Level::Low);
+
+        u.pin("CLK").drive<Level>(Level::Low);
+        u.pin("CLK").drive<Level>(Level::High);
+
+        CHECK(u.pin("1Q").read<Level>() == Level::High);
+        CHECK(u.pin("2Q").read<Level>() == Level::Low);
+        CHECK(u.pin("3Q").read<Level>() == Level::High);
+        CHECK(u.pin("4Q").read<Level>() == Level::Low);
+        CHECK(u.pin("5Q").read<Level>() == Level::High);
+        CHECK(u.pin("6Q").read<Level>() == Level::Low);
+        CHECK(u.pin("7Q").read<Level>() == Level::High);
+        CHECK(u.pin("8Q").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("VCC removed -> outputs HighZ")
+    {
+        LS374 u{ LS374::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(5.0f);
+        u.pin("OC").drive<Level>(Level::Low);
+        u.pin("1D").drive<Level>(Level::High);
+        u.pin("CLK").drive<Level>(Level::Low);
+        u.pin("CLK").drive<Level>(Level::High);
+        CHECK(u.pin("1Q").read<Level>() == Level::High);
+
+        u.pin("VCC").release();
+        CHECK(u.pin("1Q").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("reset() drives all Q=Low")
+    {
+        LS374 u{ LS374::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(5.0f);
+        u.pin("OC").drive<Level>(Level::Low);
+        u.pin("1D").drive<Level>(Level::High);
+        u.pin("CLK").drive<Level>(Level::Low);
+        u.pin("CLK").drive<Level>(Level::High);
+        CHECK(u.pin("1Q").read<Level>() == Level::High);
+
+        u.reset();
+        CHECK(u.pin("1Q").read<Level>() == Level::Low);
+        CHECK(u.pin("2Q").read<Level>() == Level::Low);
+        CHECK(u.pin("3Q").read<Level>() == Level::Low);
+        CHECK(u.pin("4Q").read<Level>() == Level::Low);
+        CHECK(u.pin("5Q").read<Level>() == Level::Low);
+        CHECK(u.pin("6Q").read<Level>() == Level::Low);
+        CHECK(u.pin("7Q").read<Level>() == Level::Low);
+        CHECK(u.pin("8Q").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("Component name is stored correctly")
+    {
+        LS374 u{ LS374::Descriptor{ .name = "U1" } };
+        CHECK(u.name() == std::string_view("U1"));
+    }
+}

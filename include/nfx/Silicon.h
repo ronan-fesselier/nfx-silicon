@@ -46,8 +46,10 @@
 #include "nfx/silicon/gate/SRLatch.h"
 
 // 74xx packages
+
 #include "nfx/silicon/gate/sn74xxx/LS74.h"
 #include "nfx/silicon/gate/sn74xxx/LS373.h"
+#include "nfx/silicon/gate/sn74xxx/LS374.h"
 
 // Signal layer
 #include "nfx/silicon/signal/Bus.h"
