@@ -52,6 +52,7 @@
 
 ###### SN74 packages
 
+- `sn74/LS00`: SN74LS00 quad 2-input NAND gate (IPassive), DIP-14 pinout, VCC-gated outputs (HighZ when unpowered), four independent Nand gates
 - `sn74/LS04`: SN74LS04 hex inverter (IPassive), DIP-14 pinout, VCC-gated outputs (HighZ when unpowered), six independent Not gates
 - `sn74/LS08`: SN74LS08 quad 2-input AND gate (IPassive), DIP-14 pinout, VCC-gated outputs (HighZ when unpowered), four independent And gates
 - `sn74/LS74`: SN74LS74A dual edge-triggered D flip-flop (IDiscrete), DIP-14 pinout, VCC-gated outputs (HighZ when unpowered), async CLR/PRE active Low, forbidden state releases Q/NQ to HighZ

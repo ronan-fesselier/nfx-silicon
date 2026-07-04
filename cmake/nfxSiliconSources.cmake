@@ -34,6 +34,7 @@ set(NFX_SILICON_SOURCES
     src/gate/SRLatch.cpp
 
     # 74xx packages
+    src/gate/sn74/LS00.cpp
     src/gate/sn74/LS04.cpp
     src/gate/sn74/LS08.cpp
     src/gate/sn74/LS74.cpp
