@@ -99,6 +99,7 @@
 - `register-adder`: scalable N-bit ripple carry adder built from N full adder cells
 - `bidirectional-bus-driver`: SN74LS374 datasheet typical application: two LS374 transferring data between two 8-bit buses, clock-gated via LS08, output control inverted via LS04
 - `general-register-file`: SN74LS374 datasheet typical application: expandable 4-word by 8-bit general register file, decoded enable and clock via LS139, shared 3-STATE bus with WiredAnd resolution
+- `ribbon-cable-transceiver`: SNx4LS245 datasheet typical application: two LS245 as permanently-enabled transceivers across an 8-bit ribbon cable, shared direction control, Master->Slave and Slave->Master transfer, isolation via /OE
 
 ### Changed
 
