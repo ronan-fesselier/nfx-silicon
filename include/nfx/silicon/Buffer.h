@@ -9,3 +9,4 @@
 #include "buffer/cd4xxx/CD4050B.h"
 
 #include "buffer/sn74xxx/LS245.h"
+#include "buffer/sn74xxx/LVC1G17.h"

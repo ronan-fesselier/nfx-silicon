@@ -267,3 +267,126 @@ TEST_SUITE("buffer::sn74xxx::LS245")
         CHECK(u.name() == std::string_view("U1"));
     }
 }
+
+TEST_SUITE("buffer::sn74xxx::LVC1G17")
+{
+    TEST_CASE("Construction creates 5 pins")
+    {
+        LVC1G17 u{ LVC1G17::Descriptor{ .name = "U1" } };
+        CHECK(u.pins().size() == 5);
+    }
+
+    TEST_CASE("Pin names match SOT-23-5 datasheet")
+    {
+        LVC1G17 u{ LVC1G17::Descriptor{ .name = "U1" } };
+        CHECK(u.pin("NC").descriptor().name == std::string_view("NC"));
+        CHECK(u.pin("A").descriptor().name == std::string_view("A"));
+        CHECK(u.pin("GND").descriptor().name == std::string_view("GND"));
+        CHECK(u.pin("Y").descriptor().name == std::string_view("Y"));
+        CHECK(u.pin("VCC").descriptor().name == std::string_view("VCC"));
+    }
+
+    TEST_CASE("Terminal enum maps to correct pins")
+    {
+        LVC1G17 u{ LVC1G17::Descriptor{ .name = "U1" } };
+        CHECK(&u.pin(LVC1G17::Terminal::NC) == &u.pin("NC"));
+        CHECK(&u.pin(LVC1G17::Terminal::A) == &u.pin("A"));
+        CHECK(&u.pin(LVC1G17::Terminal::GND) == &u.pin("GND"));
+        CHECK(&u.pin(LVC1G17::Terminal::Y) == &u.pin("Y"));
+        CHECK(&u.pin(LVC1G17::Terminal::VCC) == &u.pin("VCC"));
+    }
+
+    TEST_CASE("VCC not driven: Y is HighZ")
+    {
+        LVC1G17 u{ LVC1G17::Descriptor{ .name = "U1" } };
+        u.pin("A").drive<Level>(Level::High);
+        CHECK(u.pin("Y").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("A=High -> Y=High")
+    {
+        LVC1G17 u{ LVC1G17::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(3.3f);
+        u.pin("A").drive<Level>(Level::High);
+        CHECK(u.pin("Y").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("A=Low -> Y=Low")
+    {
+        LVC1G17 u{ LVC1G17::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(3.3f);
+        u.pin("A").drive<Level>(Level::Low);
+        CHECK(u.pin("Y").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("A=HighZ -> Y=HighZ")
+    {
+        LVC1G17 u{ LVC1G17::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(3.3f);
+        CHECK(u.pin("Y").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("Y follows A transitions")
+    {
+        LVC1G17 u{ LVC1G17::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(5.0f);
+
+        u.pin("A").drive<Level>(Level::Low);
+        CHECK(u.pin("Y").read<Level>() == Level::Low);
+
+        u.pin("A").drive<Level>(Level::High);
+        CHECK(u.pin("Y").read<Level>() == Level::High);
+
+        u.pin("A").drive<Level>(Level::Low);
+        CHECK(u.pin("Y").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("VCC removed after operation: Y returns to HighZ")
+    {
+        LVC1G17 u{ LVC1G17::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(3.3f);
+        u.pin("A").drive<Level>(Level::High);
+        CHECK(u.pin("Y").read<Level>() == Level::High);
+
+        u.pin("VCC").release();
+        CHECK(u.pin("Y").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("VCC at lower bound (1.65V) is valid")
+    {
+        LVC1G17 u{ LVC1G17::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(1.65f);
+        u.pin("A").drive<Level>(Level::High);
+        CHECK(u.pin("Y").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("VCC at upper bound (5.5V) is valid")
+    {
+        LVC1G17 u{ LVC1G17::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(5.5f);
+        u.pin("A").drive<Level>(Level::High);
+        CHECK(u.pin("Y").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("VCC below lower bound: Y is HighZ")
+    {
+        LVC1G17 u{ LVC1G17::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(1.64f);
+        u.pin("A").drive<Level>(Level::High);
+        CHECK(u.pin("Y").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("VCC above upper bound: Y is HighZ")
+    {
+        LVC1G17 u{ LVC1G17::Descriptor{ .name = "U1" } };
+        u.pin("VCC").drive<float>(5.51f);
+        u.pin("A").drive<Level>(Level::High);
+        CHECK(u.pin("Y").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("Component name is stored correctly")
+    {
+        LVC1G17 u{ LVC1G17::Descriptor{ .name = "U1" } };
+        CHECK(u.name() == std::string_view("U1"));
+    }
+}

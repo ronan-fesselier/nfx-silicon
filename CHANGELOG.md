@@ -64,6 +64,7 @@
 - `CD4050B`: CD4050B CMOS hex non-inverting buffer (IPassive), DIP-16 pinout, VCC-gated outputs (HighZ when unpowered), six independent pass-through buffers, same pinout as CD4049UB, 3V-18V supply range
 
 - `LS245`: SN74LS245 octal bus transceiver with 3-STATE outputs (IPassive), DIP-20 pinout, VCC-gated outputs (HighZ when unpowered), bidirectional A/B channels, direction controlled by DIR, isolation via /OE
+- `LVC1G17`: SN74LVC1G17 single Schmitt-trigger buffer (IPassive), SOT-23-5 pinout, VCC-gated output (HighZ when unpowered), non-inverting Y=A, 1.65V-5.5V supply range
 
 ##### decoder
 
@@ -118,7 +119,7 @@
 ##### buffer
 
 - `tests_cd4xxx`: unit tests for CD4049UB and CD4050B (construction, DIP pin names, Terminal enum, truth table, power gating, VCC removal and below-range, buffer independence, component name)
-- `tests_sn74xxx`: unit tests for LS245 (construction, DIP pin names, Terminal enum, power gating, DIR/OE control, bidirectional transfer, bus isolation, component name)
+- `tests_sn74xxx`: unit tests for LS245 and LVC1G17 (construction, SOT-23-5 and DIP pin names, Terminal enum, power gating, DIR/OE control, bidirectional transfer, Y=A logic, VCC bounds, component name)
 
 ##### decoder
 
