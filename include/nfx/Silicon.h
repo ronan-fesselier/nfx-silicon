@@ -14,6 +14,7 @@
 #include "nfx/silicon/FlipFlop.h"
 #include "nfx/silicon/Gate.h"
 #include "nfx/silicon/Latch.h"
+#include "nfx/silicon/Memory.h"
 #include "nfx/silicon/Mux.h"
 #include "nfx/silicon/Primitive.h"
 #include "nfx/silicon/Signal.h"

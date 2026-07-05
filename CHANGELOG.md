@@ -99,6 +99,10 @@
 
 - `LS373`: SN74LS373 octal transparent latch (IDiscrete), DIP-20 pinout, VCC-gated outputs (HighZ when unpowered), OC active Low, C (latch enable) High transparent / Low latched, 3-STATE outputs
 
+##### memory
+
+- `CDP1832`: CDP1832 CMOS 512x8 mask-programmable ROM (IPassive), DIP-24 pinout, VDD-gated outputs (HighZ when unpowered), CS active-Low enables BUS0..BUS7, nine address inputs (MA0..MA7, A8), ROM content fixed at construction via descriptor, pin names per RCA datasheet (92CS-27579R2), 4V-10.5V supply range
+
 ##### mux
 
 - `CD4051B`: CD4051B CMOS single 8-channel analog multiplexer/demultiplexer (IPassive), DIP-16 pinout, VDD-gated selection (activeChannel() returns nullopt when unpowered), INH active-High isolates all channels, 3-bit CBA address selects CH0..CH7, no analog passthrough until Phase 8 solver (same convention as Switch/PushButton), pin names per TI/RCA CD4051B datasheet (SCHS047), 3V-18V supply range
@@ -149,6 +153,10 @@
 
 - `tests_cd4xxx`: unit tests for CD4042B and CD4508B (construction, DIP pin names, Terminal enum, power gating, STROBE/RESET/DISABLE truth table, latch independence, reset(), component name)
 - `tests_sn74xxx`: unit tests for LS373 (construction, DIP pin names, Terminal enum, power gating, latch enable, OC control, 3-STATE outputs, reset(), component name)
+
+##### memory
+
+- `tests_cdp1xxx`: unit tests for CDP1832 (construction, DIP-24 pin names, Terminal enum, VDD gating, VDD out-of-range, CS isolation, address decoding, reactive address changes, CS toggle, VDD removal, component name)
 
 ##### mux
 

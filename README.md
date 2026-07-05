@@ -44,6 +44,7 @@ nfx-silicon/
 │       ├── flipflop/    # Flip-flop packages (CD4013B, LS74, LS374)
 │       ├── gate/        # Gate packages (CD4011B, LS00, LS04, LS08, LS32, LS86)
 │       ├── latch/       # Latch packages (CD4042B, LS373)
+│       ├── memory/      # Memory packages (CDP1832)
 │       ├── mux/         # Analog mux packages (CD4051B)
 │       ├── primitive/   # Logic primitives (And, Or, Nand, Nor, Not, Xor, Xnor, DLatch, DFlipFlop, SRLatch, JKFlipFlop)
 │       └── signal/      # Signal layer (Pin, Wire, Bus, PowerRail)

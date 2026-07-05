@@ -72,6 +72,9 @@ set(NFX_SILICON_SOURCES
 
     src/latch/sn74xxx/LS373.cpp
 
+    # Memory
+    src/memory/cdp1xxx/CDP1832.cpp
+
     # Mux
     src/mux/cd4xxx/CD4051B.cpp
 )
