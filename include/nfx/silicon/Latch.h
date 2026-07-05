@@ -6,5 +6,6 @@
  */
 
 #include "latch/cd4xxx/CD4042B.h"
+#include "latch/cd4xxx/CD4508B.h"
 
 #include "latch/sn74xxx/LS373.h"

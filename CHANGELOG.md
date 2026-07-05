@@ -95,6 +95,7 @@
 ##### latch
 
 - `CD4042B`: CD4042B CMOS quad clocked D latch (IDiscrete), DIP-16 pinout, VDD-gated outputs (HighZ when unpowered), four independent latches sharing a common CLOCK and POLARITY, CL=CLOCK XNOR POLARITY enables transparency, pin names per TI datasheet (SCHS040D), 3V-18V supply range
+- `CD4508B`: CD4508B CMOS dual 4-bit latch (IDiscrete), DIP-24 pinout, VDD-gated outputs (HighZ when unpowered), two independent latches (A/B) each with STROBE (High transparent / Low latched), RESET (active-High forces Q=Low), OUTPUT DISABLE (active-High forces HighZ), priority DISABLE>RESET>STROBE, pin names per RCA datasheet (92CS-27804), 3V-18V supply range
 
 - `LS373`: SN74LS373 octal transparent latch (IDiscrete), DIP-20 pinout, VCC-gated outputs (HighZ when unpowered), OC active Low, C (latch enable) High transparent / Low latched, 3-STATE outputs
 
@@ -146,7 +147,7 @@
 
 ##### latch
 
-- `tests_cd4xxx`: unit tests for CD4042B (construction, DIP pin names, Terminal enum, power gating, STROBE/RESET/DISABLE truth table, latch independence, reset(), component name)
+- `tests_cd4xxx`: unit tests for CD4042B and CD4508B (construction, DIP pin names, Terminal enum, power gating, STROBE/RESET/DISABLE truth table, latch independence, reset(), component name)
 - `tests_sn74xxx`: unit tests for LS373 (construction, DIP pin names, Terminal enum, power gating, latch enable, OC control, 3-STATE outputs, reset(), component name)
 
 ##### mux

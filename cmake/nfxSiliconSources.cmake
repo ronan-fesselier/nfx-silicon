@@ -68,6 +68,7 @@ set(NFX_SILICON_SOURCES
 
     # Latch
     src/latch/cd4xxx/CD4042B.cpp
+    src/latch/cd4xxx/CD4508B.cpp
 
     src/latch/sn74xxx/LS373.cpp
 
