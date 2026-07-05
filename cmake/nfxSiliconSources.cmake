@@ -44,6 +44,8 @@ set(NFX_SILICON_SOURCES
     src/buffer/sn74xxx/LVC1G17.cpp
 
     # Decoder
+    src/decoder/cd4xxx/CD4556B.cpp
+
     src/decoder/sn74xxx/LS138.cpp
     src/decoder/sn74xxx/LS139.cpp
 
