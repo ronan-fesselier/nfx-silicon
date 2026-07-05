@@ -45,6 +45,7 @@ set(NFX_SILICON_SOURCES
 
     # Decoder
     src/decoder/cd4xxx/CD4028B.cpp
+    src/decoder/cd4xxx/CD4515B.cpp
     src/decoder/cd4xxx/CD4556B.cpp
 
     src/decoder/sn74xxx/LS138.cpp

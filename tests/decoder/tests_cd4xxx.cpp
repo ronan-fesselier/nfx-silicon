@@ -208,6 +208,229 @@ TEST_SUITE("decoder::cd4xxx::CD4028B")
     }
 }
 
+TEST_SUITE("decoder::cd4xxx::CD4515B")
+{
+    TEST_CASE("Construction creates 24 pins")
+    {
+        CD4515B u{ CD4515B::Descriptor{ .name = "U12" } };
+
+        CHECK(u.pins().size() == 24);
+    }
+
+    TEST_CASE("Pin names match DIP-24 datasheet")
+    {
+        CD4515B u{ CD4515B::Descriptor{ .name = "U12" } };
+
+        CHECK(u.pin("STROBE").descriptor().name == std::string_view("STROBE"));
+        CHECK(u.pin("DATA1").descriptor().name == std::string_view("DATA1"));
+        CHECK(u.pin("DATA2").descriptor().name == std::string_view("DATA2"));
+        CHECK(u.pin("S7").descriptor().name == std::string_view("S7"));
+        CHECK(u.pin("S6").descriptor().name == std::string_view("S6"));
+        CHECK(u.pin("S5").descriptor().name == std::string_view("S5"));
+        CHECK(u.pin("S4").descriptor().name == std::string_view("S4"));
+        CHECK(u.pin("S3").descriptor().name == std::string_view("S3"));
+        CHECK(u.pin("S1").descriptor().name == std::string_view("S1"));
+        CHECK(u.pin("S2").descriptor().name == std::string_view("S2"));
+        CHECK(u.pin("S0").descriptor().name == std::string_view("S0"));
+        CHECK(u.pin("VSS").descriptor().name == std::string_view("VSS"));
+
+        CHECK(u.pin("S13").descriptor().name == std::string_view("S13"));
+        CHECK(u.pin("S12").descriptor().name == std::string_view("S12"));
+        CHECK(u.pin("S15").descriptor().name == std::string_view("S15"));
+        CHECK(u.pin("S14").descriptor().name == std::string_view("S14"));
+        CHECK(u.pin("S9").descriptor().name == std::string_view("S9"));
+        CHECK(u.pin("S8").descriptor().name == std::string_view("S8"));
+        CHECK(u.pin("S11").descriptor().name == std::string_view("S11"));
+        CHECK(u.pin("S10").descriptor().name == std::string_view("S10"));
+        CHECK(u.pin("DATA3").descriptor().name == std::string_view("DATA3"));
+        CHECK(u.pin("DATA4").descriptor().name == std::string_view("DATA4"));
+        CHECK(u.pin("INHIBIT").descriptor().name == std::string_view("INHIBIT"));
+        CHECK(u.pin("VDD").descriptor().name == std::string_view("VDD"));
+    }
+
+    TEST_CASE("Terminal enum maps to correct pins")
+    {
+        CD4515B u{ CD4515B::Descriptor{ .name = "U12" } };
+
+        CHECK(&u.pin(CD4515B::Terminal::STROBE) == &u.pin("STROBE"));
+        CHECK(&u.pin(CD4515B::Terminal::DATA1) == &u.pin("DATA1"));
+        CHECK(&u.pin(CD4515B::Terminal::DATA2) == &u.pin("DATA2"));
+        CHECK(&u.pin(CD4515B::Terminal::S7) == &u.pin("S7"));
+        CHECK(&u.pin(CD4515B::Terminal::S6) == &u.pin("S6"));
+        CHECK(&u.pin(CD4515B::Terminal::S5) == &u.pin("S5"));
+        CHECK(&u.pin(CD4515B::Terminal::S4) == &u.pin("S4"));
+        CHECK(&u.pin(CD4515B::Terminal::S3) == &u.pin("S3"));
+        CHECK(&u.pin(CD4515B::Terminal::S1) == &u.pin("S1"));
+        CHECK(&u.pin(CD4515B::Terminal::S2) == &u.pin("S2"));
+        CHECK(&u.pin(CD4515B::Terminal::S0) == &u.pin("S0"));
+        CHECK(&u.pin(CD4515B::Terminal::VSS) == &u.pin("VSS"));
+
+        CHECK(&u.pin(CD4515B::Terminal::S13) == &u.pin("S13"));
+        CHECK(&u.pin(CD4515B::Terminal::S12) == &u.pin("S12"));
+        CHECK(&u.pin(CD4515B::Terminal::S15) == &u.pin("S15"));
+        CHECK(&u.pin(CD4515B::Terminal::S14) == &u.pin("S14"));
+        CHECK(&u.pin(CD4515B::Terminal::S9) == &u.pin("S9"));
+        CHECK(&u.pin(CD4515B::Terminal::S8) == &u.pin("S8"));
+        CHECK(&u.pin(CD4515B::Terminal::S11) == &u.pin("S11"));
+        CHECK(&u.pin(CD4515B::Terminal::S10) == &u.pin("S10"));
+        CHECK(&u.pin(CD4515B::Terminal::DATA3) == &u.pin("DATA3"));
+        CHECK(&u.pin(CD4515B::Terminal::DATA4) == &u.pin("DATA4"));
+        CHECK(&u.pin(CD4515B::Terminal::INHIBIT) == &u.pin("INHIBIT"));
+        CHECK(&u.pin(CD4515B::Terminal::VDD) == &u.pin("VDD"));
+    }
+
+    TEST_CASE("VDD not driven: outputs are HighZ")
+    {
+        CD4515B u{ CD4515B::Descriptor{ .name = "U12" } };
+        u.pin("STROBE").drive<Level>(Level::High);
+        u.pin("INHIBIT").drive<Level>(Level::Low);
+        u.pin("DATA1").drive<Level>(Level::Low);
+        u.pin("DATA2").drive<Level>(Level::Low);
+        u.pin("DATA3").drive<Level>(Level::Low);
+        u.pin("DATA4").drive<Level>(Level::Low);
+
+        CHECK(u.pin("S0").read<Level>() == Level::HighZ);
+        CHECK(u.pin("S15").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("VDD below range: outputs are HighZ")
+    {
+        CD4515B u{ CD4515B::Descriptor{ .name = "U12" } };
+        u.pin("VDD").drive<float>(5.0f);
+        u.pin("STROBE").drive<Level>(Level::High);
+        u.pin("INHIBIT").drive<Level>(Level::Low);
+        u.pin("DATA1").drive<Level>(Level::Low);
+        u.pin("DATA2").drive<Level>(Level::Low);
+        u.pin("DATA3").drive<Level>(Level::Low);
+        u.pin("DATA4").drive<Level>(Level::Low);
+        CHECK(u.pin("S0").read<Level>() == Level::Low);
+
+        u.pin("VDD").drive<float>(1.0f);
+
+        CHECK(u.pin("S0").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("VDD above range: outputs are HighZ")
+    {
+        CD4515B u{ CD4515B::Descriptor{ .name = "U12" } };
+        u.pin("VDD").drive<float>(5.0f);
+        u.pin("STROBE").drive<Level>(Level::High);
+        u.pin("INHIBIT").drive<Level>(Level::Low);
+        u.pin("DATA1").drive<Level>(Level::Low);
+        u.pin("DATA2").drive<Level>(Level::Low);
+        u.pin("DATA3").drive<Level>(Level::Low);
+        u.pin("DATA4").drive<Level>(Level::Low);
+        CHECK(u.pin("S0").read<Level>() == Level::Low);
+
+        u.pin("VDD").drive<float>(19.0f);
+
+        CHECK(u.pin("S0").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("INHIBIT High: all outputs High")
+    {
+        CD4515B u{ CD4515B::Descriptor{ .name = "U12" } };
+        u.pin("VDD").drive<float>(5.0f);
+        u.pin("STROBE").drive<Level>(Level::High);
+        u.pin("INHIBIT").drive<Level>(Level::High);
+        u.pin("DATA1").drive<Level>(Level::Low);
+        u.pin("DATA2").drive<Level>(Level::Low);
+        u.pin("DATA3").drive<Level>(Level::Low);
+        u.pin("DATA4").drive<Level>(Level::Low);
+
+        CHECK(u.pin("S0").read<Level>() == Level::High);
+        CHECK(u.pin("S15").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("All 16 addresses decode correctly (STROBE=High, INHIBIT=Low)")
+    {
+        CD4515B u{ CD4515B::Descriptor{ .name = "U12" } };
+        u.pin("VDD").drive<float>(5.0f);
+        u.pin("STROBE").drive<Level>(Level::High);
+        u.pin("INHIBIT").drive<Level>(Level::Low);
+
+        const char* sPins[16] = { "S0", "S1", "S2",  "S3",  "S4",  "S5",  "S6",  "S7",
+                                  "S8", "S9", "S10", "S11", "S12", "S13", "S14", "S15" };
+
+        for (std::uint8_t code = 0; code < 16; ++code)
+        {
+            u.pin("DATA1").drive<Level>(code & 1u ? Level::High : Level::Low);
+            u.pin("DATA2").drive<Level>(code & 2u ? Level::High : Level::Low);
+            u.pin("DATA3").drive<Level>(code & 4u ? Level::High : Level::Low);
+            u.pin("DATA4").drive<Level>(code & 8u ? Level::High : Level::Low);
+
+            for (std::uint8_t i = 0; i < 16; ++i)
+            {
+                CHECK(u.pin(sPins[i]).read<Level>() == (i == code ? Level::Low : Level::High));
+            }
+        }
+    }
+
+    TEST_CASE("STROBE=Low latches outputs")
+    {
+        CD4515B u{ CD4515B::Descriptor{ .name = "U12" } };
+        u.pin("VDD").drive<float>(5.0f);
+        u.pin("STROBE").drive<Level>(Level::High);
+        u.pin("INHIBIT").drive<Level>(Level::Low);
+        u.pin("DATA1").drive<Level>(Level::Low);
+        u.pin("DATA2").drive<Level>(Level::Low);
+        u.pin("DATA3").drive<Level>(Level::Low);
+        u.pin("DATA4").drive<Level>(Level::Low);
+        CHECK(u.pin("S0").read<Level>() == Level::Low);
+        CHECK(u.pin("S1").read<Level>() == Level::High);
+
+        u.pin("STROBE").drive<Level>(Level::Low);
+        u.pin("DATA1").drive<Level>(Level::High);
+
+        CHECK(u.pin("S0").read<Level>() == Level::Low);
+        CHECK(u.pin("S1").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("STROBE returning High re-decodes current address")
+    {
+        CD4515B u{ CD4515B::Descriptor{ .name = "U12" } };
+        u.pin("VDD").drive<float>(5.0f);
+        u.pin("STROBE").drive<Level>(Level::High);
+        u.pin("INHIBIT").drive<Level>(Level::Low);
+        u.pin("DATA1").drive<Level>(Level::Low);
+        u.pin("DATA2").drive<Level>(Level::Low);
+        u.pin("DATA3").drive<Level>(Level::Low);
+        u.pin("DATA4").drive<Level>(Level::Low);
+        u.pin("STROBE").drive<Level>(Level::Low);
+        u.pin("DATA1").drive<Level>(Level::High);
+
+        u.pin("STROBE").drive<Level>(Level::High);
+
+        CHECK(u.pin("S0").read<Level>() == Level::High);
+        CHECK(u.pin("S1").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("VDD removed after operation: outputs return to HighZ")
+    {
+        CD4515B u{ CD4515B::Descriptor{ .name = "U12" } };
+        u.pin("VDD").drive<float>(5.0f);
+        u.pin("STROBE").drive<Level>(Level::High);
+        u.pin("INHIBIT").drive<Level>(Level::Low);
+        u.pin("DATA1").drive<Level>(Level::Low);
+        u.pin("DATA2").drive<Level>(Level::Low);
+        u.pin("DATA3").drive<Level>(Level::Low);
+        u.pin("DATA4").drive<Level>(Level::Low);
+        CHECK(u.pin("S0").read<Level>() == Level::Low);
+
+        u.pin("VDD").release();
+
+        CHECK(u.pin("S0").read<Level>() == Level::HighZ);
+        CHECK(u.pin("S15").read<Level>() == Level::HighZ);
+    }
+
+    TEST_CASE("Component name is stored correctly")
+    {
+        CD4515B u{ CD4515B::Descriptor{ .name = "U12" } };
+
+        CHECK(u.name() == std::string_view("U12"));
+    }
+}
+
 TEST_SUITE("decoder::cd4xxx::CD4556B")
 {
     TEST_CASE("Construction creates 16 pins")

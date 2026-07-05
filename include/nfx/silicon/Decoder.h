@@ -6,6 +6,7 @@
  */
 
 #include "decoder/cd4xxx/CD4028B.h"
+#include "decoder/cd4xxx/CD4515B.h"
 #include "decoder/cd4xxx/CD4556B.h"
 
 #include "decoder/sn74xxx/LS138.h"
