@@ -49,6 +49,7 @@
 
 // CD4xxx packages
 #include "nfx/silicon/gate/cd4xxx/CD4011B.h"
+#include "nfx/silicon/gate/cd4xxx/CD4013B.h"
 #include "nfx/silicon/gate/cd4xxx/CD4049UB.h"
 #include "nfx/silicon/gate/cd4xxx/CD4050B.h"
 

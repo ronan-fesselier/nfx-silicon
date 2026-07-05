@@ -35,6 +35,7 @@ set(NFX_SILICON_SOURCES
 
     # CD4xxx packages
     src/gate/cd4xxx/CD4011B.cpp
+    src/gate/cd4xxx/CD4013B.cpp
     src/gate/cd4xxx/CD4049UB.cpp
     src/gate/cd4xxx/CD4050B.cpp
 
