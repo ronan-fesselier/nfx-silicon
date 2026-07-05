@@ -69,4 +69,7 @@ set(NFX_SILICON_SOURCES
     src/latch/cd4xxx/CD4042B.cpp
 
     src/latch/sn74xxx/LS373.cpp
+
+    # Mux
+    src/mux/cd4xxx/CD4051B.cpp
 )

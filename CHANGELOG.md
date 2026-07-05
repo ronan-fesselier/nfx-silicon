@@ -97,6 +97,10 @@
 
 - `LS373`: SN74LS373 octal transparent latch (IDiscrete), DIP-20 pinout, VCC-gated outputs (HighZ when unpowered), OC active Low, C (latch enable) High transparent / Low latched, 3-STATE outputs
 
+##### mux
+
+- `CD4051B`: CD4051B CMOS single 8-channel analog multiplexer/demultiplexer (IPassive), DIP-16 pinout, VDD-gated selection (activeChannel() returns nullopt when unpowered), INH active-High isolates all channels, 3-bit CBA address selects CH0..CH7, no analog passthrough until Phase 8 solver (same convention as Switch/PushButton), pin names per TI/RCA CD4051B datasheet (SCHS047), 3V-18V supply range
+
 #### Tests
 
 ##### signal
@@ -143,6 +147,10 @@
 
 - `tests_cd4xxx`: unit tests for CD4042B (construction, DIP pin names, Terminal enum, power gating, CLOCK/POLARITY truth table, latch independence, reset(), component name)
 - `tests_sn74xxx`: unit tests for LS373 (construction, DIP pin names, Terminal enum, power gating, latch enable, OC control, 3-STATE outputs, reset(), component name)
+
+##### mux
+
+- `tests_cd4xxx`: unit tests for CD4051B (construction, DIP-16 pin names, Terminal enum, VDD gating, VDD out-of-range, INH isolation, address HighZ, all 8 channel selections, INH toggle, VDD removal, component name)
 
 #### Samples
 
