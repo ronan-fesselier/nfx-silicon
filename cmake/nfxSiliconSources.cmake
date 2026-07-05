@@ -3,61 +3,66 @@
 #==============================================================================
 
 set(NFX_SILICON_SOURCES
-    # Discrete components
-    src/discrete/Capacitor.cpp
-    src/discrete/Inductor.cpp
-    src/discrete/Resistor.cpp
+    # Internal runtime
+    src/internal/runtime/Error.cpp
 
-    src/discrete/Diode.cpp
-    src/discrete/LED.cpp
-
-    src/discrete/Quartz.cpp
-
-    src/discrete/PowerSupply.cpp
-
-    src/discrete/PushButton.cpp
-    src/discrete/Switch.cpp
-
-    # Gate primitives
-    src/gate/And.cpp
-    src/gate/Nand.cpp
-    src/gate/Nor.cpp
-    src/gate/Not.cpp
-    src/gate/Or.cpp
-    src/gate/Xor.cpp
-    src/gate/Xnor.cpp
-
-    # Sequential gate primitives
-    src/gate/DFlipFlop.cpp
-    src/gate/DLatch.cpp
-    src/gate/JKFlipFlop.cpp
-    src/gate/SRLatch.cpp
-
-    # CD4xxx packages
-    src/gate/cd4xxx/CD4011B.cpp
-    src/gate/cd4xxx/CD4013B.cpp
-    src/gate/cd4xxx/CD4042B.cpp
-    src/gate/cd4xxx/CD4049UB.cpp
-    src/gate/cd4xxx/CD4050B.cpp
-
-    # 74xx packages
-    src/gate/sn74/LS00.cpp
-    src/gate/sn74/LS04.cpp
-    src/gate/sn74/LS08.cpp
-    src/gate/sn74/LS32.cpp
-    src/gate/sn74/LS74.cpp
-    src/gate/sn74/LS86.cpp
-    src/gate/sn74/LS138.cpp
-    src/gate/sn74/LS139.cpp
-    src/gate/sn74/LS245.cpp
-    src/gate/sn74/LS373.cpp
-    src/gate/sn74/LS374.cpp
-
-    # Signal layer
+    # Signal
     src/signal/Bus.cpp
     src/signal/Pin.cpp
     src/signal/Wire.cpp
 
-    # Internal runtime
-    src/internal/runtime/Error.cpp
+    # Discrete
+    src/discrete/Capacitor.cpp
+    src/discrete/Diode.cpp
+    src/discrete/Inductor.cpp
+    src/discrete/LED.cpp
+    src/discrete/PowerSupply.cpp
+    src/discrete/PushButton.cpp
+    src/discrete/Quartz.cpp
+    src/discrete/Resistor.cpp
+    src/discrete/Switch.cpp
+
+    # Primitive
+    src/primitive/And.cpp
+    src/primitive/Nand.cpp
+    src/primitive/Nor.cpp
+    src/primitive/Not.cpp
+    src/primitive/Or.cpp
+    src/primitive/Xor.cpp
+    src/primitive/Xnor.cpp
+
+    src/primitive/DFlipFlop.cpp
+    src/primitive/DLatch.cpp
+    src/primitive/JKFlipFlop.cpp
+    src/primitive/SRLatch.cpp
+
+    # Buffer
+    src/buffer/cd4xxx/CD4049UB.cpp
+    src/buffer/cd4xxx/CD4050B.cpp
+
+    src/buffer/sn74xxx/LS245.cpp
+
+    # Decoder
+    src/decoder/sn74xxx/LS138.cpp
+    src/decoder/sn74xxx/LS139.cpp
+
+    # Flip-flop
+    src/flipflop/cd4xxx/CD4013B.cpp
+
+    src/flipflop/sn74xxx/LS74.cpp
+    src/flipflop/sn74xxx/LS374.cpp
+
+    # Gate
+    src/gate/cd4xxx/CD4011B.cpp
+
+    src/gate/sn74xxx/LS00.cpp
+    src/gate/sn74xxx/LS04.cpp
+    src/gate/sn74xxx/LS08.cpp
+    src/gate/sn74xxx/LS32.cpp
+    src/gate/sn74xxx/LS86.cpp
+
+    # Latch
+    src/latch/cd4xxx/CD4042B.cpp
+
+    src/latch/sn74xxx/LS373.cpp
 )

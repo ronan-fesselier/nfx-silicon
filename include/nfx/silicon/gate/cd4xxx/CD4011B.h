@@ -6,7 +6,7 @@
  */
 
 #include "nfx/silicon/component/IPassive.h"
-#include "nfx/silicon/gate/Nand.h"
+#include "nfx/silicon/primitive/Nand.h"
 #include "nfx/silicon/signal/Pin.h"
 
 #include <array>
@@ -123,7 +123,7 @@ namespace nfx::silicon::gate::cd4xxx
         Descriptor m_descriptor;
         bool m_powered{ false };
 
-        std::array<Nand, 4> m_gates;
+        std::array<primitive::Nand, 4> m_gates;
 
         signal::Pin m_pinA;
         signal::Pin m_pinB;

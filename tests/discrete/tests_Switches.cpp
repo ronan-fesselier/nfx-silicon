@@ -3,8 +3,8 @@
 #include <nfx/Silicon.h>
 
 using namespace nfx::silicon;
-using namespace nfx::silicon::signal;
 using namespace nfx::silicon::discrete;
+using namespace nfx::silicon::signal;
 
 TEST_SUITE("discrete::Switch")
 {

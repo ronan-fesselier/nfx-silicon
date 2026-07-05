@@ -37,10 +37,15 @@ nfx-silicon/
 │   ├── Silicon.h        # Top-level nfx::silicon API entry point
 │   └── silicon/
 │       ├── Types.h      # Shared scalar types (Level, Voltage)
+│       ├── buffer/      # Buffer packages (CD4049UB, CD4050B, LS245)
 │       ├── component/   # Component interfaces (IComponent, IPassive, IDipole, IDiscrete, IInspectable)
-│       ├── gate/        # Combinational gate primitives (Not, And, Or...)
-│       ├── discrete/    # Discrete components (PowerSupply, Resistor, Inductor, Capacitor, Diode...)
-│       └── signal/      # Signal layer (Signal, Bus, Pin, Wire, PowerRail)
+│       ├── decoder/     # Decoder packages (LS138, LS139)
+│       ├── discrete/    # Discrete components (PowerSupply, Resistor, Capacitor, Diode, LED...)
+│       ├── flipflop/    # Flip-flop packages (CD4013B, LS74, LS374)
+│       ├── gate/        # Gate packages (CD4011B, LS00, LS04, LS08, LS32, LS86)
+│       ├── latch/       # Latch packages (CD4042B, LS373)
+│       ├── primitive/   # Logic primitives (And, Or, Nand, Nor, Not, Xor, Xnor, DLatch, DFlipFlop, SRLatch, JKFlipFlop)
+│       └── signal/      # Signal layer (Pin, Wire, Bus, PowerRail)
 ├── samples/             # Runnable samples demonstrating nfx::silicon circuits
 ├── src/                 # Implementations
 └── tests/               # Unit tests

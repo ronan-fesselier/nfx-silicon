@@ -23,6 +23,11 @@ include(doctest)
 # Test subdirectories
 #----------------------------------------------
 
-add_subdirectory(gate)
+add_subdirectory(buffer)
+add_subdirectory(decoder)
 add_subdirectory(discrete)
+add_subdirectory(flipflop)
+add_subdirectory(gate)
+add_subdirectory(latch)
+add_subdirectory(primitive)
 add_subdirectory(signal)

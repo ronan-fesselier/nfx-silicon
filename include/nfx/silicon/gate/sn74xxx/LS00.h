@@ -6,14 +6,14 @@
  */
 
 #include "nfx/silicon/component/IPassive.h"
-#include "nfx/silicon/gate/Nand.h"
+#include "nfx/silicon/primitive/Nand.h"
 #include "nfx/silicon/signal/Pin.h"
 
 #include <array>
 #include <cstdint>
 #include <span>
 
-namespace nfx::silicon::gate::sn74
+namespace nfx::silicon::gate::sn74xxx
 {
     /**
      * \class LS00
@@ -114,7 +114,7 @@ namespace nfx::silicon::gate::sn74
         Descriptor m_descriptor;
         bool m_powered{ false };
 
-        std::array<Nand, 4> m_gates;
+        std::array<primitive::Nand, 4> m_gates;
 
         signal::Pin m_pinA1;
         signal::Pin m_pinB1;
@@ -134,4 +134,4 @@ namespace nfx::silicon::gate::sn74
 
         std::array<signal::Pin*, 14> m_pinPtrs;
     };
-} // namespace nfx::silicon::gate::sn74
+} // namespace nfx::silicon::gate::sn74xxx

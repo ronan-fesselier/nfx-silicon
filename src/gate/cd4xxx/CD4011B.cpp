@@ -32,10 +32,10 @@ namespace nfx::silicon::gate::cd4xxx
 
     CD4011B::CD4011B(const Descriptor& descriptor)
         : m_descriptor{ descriptor },
-          m_gates{ Nand{ Nand::Descriptor{ .name = "NAND1" } },
-                   Nand{ Nand::Descriptor{ .name = "NAND2" } },
-                   Nand{ Nand::Descriptor{ .name = "NAND3" } },
-                   Nand{ Nand::Descriptor{ .name = "NAND4" } } },
+          m_gates{ primitive::Nand{ primitive::Nand::Descriptor{ .name = "NAND1" } },
+                   primitive::Nand{ primitive::Nand::Descriptor{ .name = "NAND2" } },
+                   primitive::Nand{ primitive::Nand::Descriptor{ .name = "NAND3" } },
+                   primitive::Nand{ primitive::Nand::Descriptor{ .name = "NAND4" } } },
           m_pinA{ makeInput("A") },
           m_pinB{ makeInput("B") },
           m_pinJ{ makeOutput("J") },
@@ -59,7 +59,7 @@ namespace nfx::silicon::gate::cd4xxx
                 {
                     return;
                 }
-                m_gates[idx].pin(Nand::Terminal::A).drive<Level>(l);
+                m_gates[idx].pin(primitive::Nand::Terminal::A).drive<Level>(l);
             });
 
             pinIn1.connect<Level>([this, idx](const Level l) {
@@ -67,10 +67,10 @@ namespace nfx::silicon::gate::cd4xxx
                 {
                     return;
                 }
-                m_gates[idx].pin(Nand::Terminal::B).drive<Level>(l);
+                m_gates[idx].pin(primitive::Nand::Terminal::B).drive<Level>(l);
             });
 
-            m_gates[idx].pin(Nand::Terminal::Y).connect<Level>([this, &pinOut](const Level l) {
+            m_gates[idx].pin(primitive::Nand::Terminal::Y).connect<Level>([this, &pinOut](const Level l) {
                 if (!m_powered)
                 {
                     return;
