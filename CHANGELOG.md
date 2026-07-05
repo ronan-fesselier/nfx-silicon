@@ -54,6 +54,7 @@
 
 - `cd4xxx/CD4011B`: CD4011B CMOS quad 2-input NAND gate (IPassive), DIP-14 pinout, VDD-gated outputs (HighZ when unpowered), four independent Nand gates, pin names per RCA datasheet (A/B/C/D/E/F/G/H/J/K/L/M), 3V-15V supply range
 - `cd4xxx/CD4013B`: CD4013B CMOS dual D-type flip-flop (IDiscrete), DIP-14 pinout, VDD-gated outputs (HighZ when unpowered), two independent edge-triggered flip-flops, SET/RESET active High (async), forbidden state (SET=High RESET=High) releases Q//Q to HighZ, pin names per TI datasheet (SCHS023E), 3V-18V supply range
+- `cd4xxx/CD4042B`: CD4042B CMOS quad clocked D latch (IDiscrete), DIP-16 pinout, VDD-gated outputs (HighZ when unpowered), four independent latches sharing a common CLOCK and POLARITY, CL=CLOCK XNOR POLARITY enables transparency, pin names per TI datasheet (SCHS040D), 3V-18V supply range
 - `cd4xxx/CD4049UB`: CD4049UB CMOS hex inverting buffer (IPassive), DIP-16 pinout, VCC-gated outputs (HighZ when unpowered), six independent Not gates, pin names per TI datasheet (A/B/C/D/E/F inputs, G/H/I/J/K/L outputs), 3V-18V supply range
 - `cd4xxx/CD4050B`: CD4050B CMOS hex non-inverting buffer (IPassive), DIP-16 pinout, VCC-gated outputs (HighZ when unpowered), six independent pass-through buffers, same pinout as CD4049UB, 3V-18V supply range
 
@@ -100,7 +101,7 @@
 
 - `tests_Gates`: unit tests for Not, And, Or, Nand, Nor, Xor, and Xnor gates (construction, pins, truth table, Terminal enum)
 - `tests_SequentialGates`: unit tests for SRLatch, DLatch, DFlipFlop, and JKFlipFlop (construction, pins, truth table, hold, forbidden state, async CLR/PRE, toggle, reset, Terminal enum)
-- `tests_cd4xxx`: unit tests for CD4011B, CD4049UB, CD4050B, CD4013B (construction, DIP pin names, Terminal enum, truth table, power gating, VDD/VCC removal and below-range, gate/buffer independence, async set/reset, forbidden state, clock capture, hold, reset(), component name)
+- `tests_cd4xxx`: unit tests for CD4011B, CD4049UB, CD4050B, CD4013B... (construction, DIP pin names, Terminal enum, truth table, power gating, VDD/VCC removal and below-range, gate/buffer independence, async set/reset, forbidden state, clock capture, hold, reset(), component name)
 - `tests_74xx`: unit tests for SN74LS74, SN74LS373, SN74LS374, SN74LS04... (construction, DIP pinout, Terminal enum, VCC power gating, OC/CLK/C behavior, async controls, forbidden states, reset, independence)
 
 #### Samples
