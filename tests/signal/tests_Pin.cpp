@@ -141,4 +141,47 @@ TEST_SUITE("Signal::Pin")
         CHECK(count1 == 1);
         CHECK(count2 == 1);
     }
+
+    TEST_CASE("Digital connect fires immediately if pin already driven")
+    {
+        Pin pin{ Pin::Descriptor{ .name = "D0", .kind = Pin::Kind::Digital, .direction = Pin::Direction::Output } };
+        pin.drive<Level>(Level::High);
+
+        Level received = Level::HighZ;
+        pin.connect<Level>([&received](const Level l) { received = l; });
+
+        CHECK(received == Level::High);
+    }
+
+    TEST_CASE("Digital connect does not fire if pin is HighZ")
+    {
+        Pin pin{ Pin::Descriptor{ .name = "D0", .kind = Pin::Kind::Digital, .direction = Pin::Direction::Output } };
+
+        int callCount = 0;
+        pin.connect<Level>([&callCount](Level) { callCount++; });
+
+        CHECK(callCount == 0);
+    }
+
+    TEST_CASE("Analog connect fires immediately if pin already driven")
+    {
+        Pin pin{ Pin::Descriptor{ .name = "A0", .kind = Pin::Kind::Analog, .direction = Pin::Direction::Output } };
+        pin.drive<float>(3.3f);
+
+        Voltage received = std::nullopt;
+        pin.connect<float>([&received](const Voltage v) { received = v; });
+
+        CHECK(received.has_value());
+        CHECK(received.value() == doctest::Approx(3.3f));
+    }
+
+    TEST_CASE("Analog connect does not fire if pin is floating")
+    {
+        Pin pin{ Pin::Descriptor{ .name = "A0", .kind = Pin::Kind::Analog, .direction = Pin::Direction::Output } };
+
+        int callCount = 0;
+        pin.connect<float>([&callCount](Voltage) { callCount++; });
+
+        CHECK(callCount == 0);
+    }
 }

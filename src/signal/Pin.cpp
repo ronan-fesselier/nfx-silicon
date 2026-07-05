@@ -45,13 +45,21 @@ namespace nfx::silicon::signal
     template <>
     void Pin::connect<Level>(std::function<void(Level)> callback)
     {
-        m_observers.digitalCallbacks.push_back(std::move(callback));
+        m_observers.digitalCallbacks.push_back(callback);
+        if (m_state.level != Level::HighZ)
+        {
+            callback(m_state.level);
+        }
     }
 
     template <>
     void Pin::connect<float>(std::function<void(Voltage)> callback)
     {
-        m_observers.analogCallbacks.push_back(std::move(callback));
+        m_observers.analogCallbacks.push_back(callback);
+        if (m_state.voltage.has_value())
+        {
+            callback(m_state.voltage);
+        }
     }
 
     void Pin::release()
