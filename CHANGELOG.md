@@ -68,6 +68,7 @@
 
 ##### decoder
 
+- `CD4028B`: CD4028B CMOS BCD-to-decimal / binary-to-octal decoder/driver (IPassive), DIP-16 pinout, VDD-gated outputs (HighZ when unpowered), active-High outputs Y0..Y9, one-hot BCD decode (D=free) or 3-bit binary-to-octal (D=Low), invalid codes 10-15 all Low, pin names per RCA datasheet, 3V-18V supply range
 - `CD4556B`: CD4556B CMOS dual binary 1-of-4 decoder/demultiplexer (IPassive), DIP-16 pinout, VDD-gated outputs (HighZ when unpowered), active-Low enable (/E1, /E2) and active-Low outputs (/1Q0../1Q3, /2Q0../2Q3), two independent decoders, pin names per RCA datasheet (92CS-24943RI), 3V-18V supply range
 
 - `LS138`: SN74LS138 3-to-8 line decoder/demultiplexer (IPassive), DIP-16 pinout, VCC-gated outputs (HighZ when unpowered), active-Low outputs, enable logic G1·/G2A·/G2B
@@ -125,7 +126,7 @@
 
 ##### decoder
 
-- `tests_cd4xxx`: unit tests for CD4556B (construction, DIP-16 pin names, Terminal enum, VDD gating, VDD out-of-range, /E disable logic, full truth table both decoders, decoder independence, HighZ propagation, VDD removal, component name)
+- `tests_cd4xxx`: unit tests for CD4556B and CD4028B (construction, DIP-16 pin names, Terminal enum, VDD gating, VDD out-of-range, logic truth table, HighZ propagation, VDD removal, component name)
 - `tests_sn74xxx`: unit tests for LS138 and LS139 (construction, DIP pin names, Terminal enum, power gating, enable logic, output truth table, decoder independence, component name)
 
 ##### flipflop
