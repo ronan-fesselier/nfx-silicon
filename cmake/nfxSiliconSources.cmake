@@ -74,6 +74,7 @@ set(NFX_SILICON_SOURCES
 
     # Memory
     src/memory/cdp1xxx/CDP1832.cpp
+    src/memory/sram/I2114.cpp
 
     # Mux
     src/mux/cd4xxx/CD4051B.cpp

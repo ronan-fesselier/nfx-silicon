@@ -6,3 +6,4 @@
  */
 
 #include "memory/cdp1xxx/CDP1832.h"
+#include "memory/sram/I2114.h"

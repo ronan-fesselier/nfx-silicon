@@ -103,6 +103,8 @@
 
 - `CDP1832`: CDP1832 CMOS 512x8 mask-programmable ROM (IPassive), DIP-24 pinout, VDD-gated outputs (HighZ when unpowered), CS active-Low enables BUS0..BUS7, nine address inputs (MA0..MA7, A8), ROM content fixed at construction via descriptor, pin names per RCA datasheet (92CS-27579R2), 4V-10.5V supply range
 
+- `I2114`: Intel 2114 1Kx4 static RAM (IDiscrete), DIP-18 pinout, Vcc-gated outputs (HighZ when unpowered), /CS active-Low chip select, /WE active-Low write enable, bidirectional I/O1..I/O4, read=/CS Low+/WE High, write=/CS Low+/WE Low, reset() clears RAM, pin names per Intel 2114 datasheet, +5V supply (4.75V-5.25V)
+
 ##### mux
 
 - `CD4051B`: CD4051B CMOS single 8-channel analog multiplexer/demultiplexer (IPassive), DIP-16 pinout, VDD-gated selection (activeChannel() returns nullopt when unpowered), INH active-High isolates all channels, 3-bit CBA address selects CH0..CH7, no analog passthrough until Phase 8 solver (same convention as Switch/PushButton), pin names per TI/RCA CD4051B datasheet (SCHS047), 3V-18V supply range
@@ -157,6 +159,7 @@
 ##### memory
 
 - `tests_cdp1xxx`: unit tests for CDP1832 (construction, DIP-24 pin names, Terminal enum, VDD gating, VDD out-of-range, CS isolation, address decoding, reactive address changes, CS toggle, VDD removal, component name)
+- `tests_sram`: unit tests for I2114 (construction, DIP-18 pin names, Terminal enum, VCC gating, VCC out-of-range, /S isolation, write/read at address 0 and 0x3FF, address independence, reset(), VCC removal, component name)
 
 ##### mux
 
