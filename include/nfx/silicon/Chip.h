@@ -6,3 +6,4 @@
  */
 
 #include "chip/cdp1xxx/CDP1852.h"
+#include "chip/cdp1xxx/CDP1861.h"

@@ -45,6 +45,7 @@ set(NFX_SILICON_SOURCES
 
     # Chip
     src/chip/cdp1xxx/CDP1852.cpp
+    src/chip/cdp1xxx/CDP1861.cpp
 
     # Decoder
     src/decoder/cd4xxx/CD4028B.cpp
