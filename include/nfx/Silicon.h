@@ -8,6 +8,7 @@
  */
 
 #include "nfx/silicon/Buffer.h"
+#include "nfx/silicon/Chip.h"
 #include "nfx/silicon/Component.h"
 #include "nfx/silicon/Decoder.h"
 #include "nfx/silicon/Discrete.h"

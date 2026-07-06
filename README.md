@@ -38,6 +38,7 @@ nfx-silicon/
 │   └── silicon/
 │       ├── Types.h      # Shared scalar types (Level, Voltage)
 │       ├── buffer/      # Buffer packages (CD4049UB, CD4050B, LS245)
+│       ├── chip/        # Chip packages (CDP1852)
 │       ├── component/   # Component interfaces (IComponent, IPassive, IDipole, IDiscrete, IInspectable)
 │       ├── decoder/     # Decoder packages (LS138, LS139)
 │       ├── discrete/    # Discrete components (PowerSupply, Resistor, Capacitor, Diode, LED...)

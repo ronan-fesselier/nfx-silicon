@@ -66,6 +66,10 @@
 - `LS245`: SN74LS245 octal bus transceiver with 3-STATE outputs (IPassive), DIP-20 pinout, VCC-gated outputs (HighZ when unpowered), bidirectional A/B channels, direction controlled by DIR, isolation via /OE
 - `LVC1G17`: SN74LVC1G17 single Schmitt-trigger buffer (IPassive), SOT-23-5 pinout, VCC-gated output (HighZ when unpowered), non-inverting Y=A, 1.65V-5.5V supply range
 
+##### chip
+
+- `CDP1852`: RCA CDP1852 byte-wide mode-programmable I/O port (IDiscrete), DIP-24 pinout, VDD-gated outputs (HighZ when unpowered), MODE Low=input port / High=output port, CLOCK trailing edge latches 8-bit DI register, CS1/CS1+CS2 dual chip select, async CLEAR resets register, bidirectional /SR/SR service-request flag, pin names per RCA CDP1852 datasheet, 4V-10.5V supply range
+
 ##### decoder
 
 - `CD4028B`: CD4028B CMOS BCD-to-decimal / binary-to-octal decoder/driver (IPassive), DIP-16 pinout, VDD-gated outputs (HighZ when unpowered), active-High outputs Y0..Y9, one-hot BCD decode (D=free) or 3-bit binary-to-octal (D=Low), invalid codes 10-15 all Low, pin names per RCA datasheet, 3V-18V supply range
@@ -135,6 +139,10 @@
 
 - `tests_cd4xxx`: unit tests for CD4049UB and CD4050B (construction, DIP pin names, Terminal enum, truth table, power gating, VCC removal and below-range, buffer independence, component name)
 - `tests_sn74xxx`: unit tests for LS245 and LVC1G17 (construction, SOT-23-5 and DIP pin names, Terminal enum, power gating, DIR/OE control, bidirectional transfer, Y=A logic, VCC bounds, component name)
+
+##### chip
+
+- `tests_cdp1xxx`: unit tests for CDP1852 (construction, DIP-24 pin names, Terminal enum, power gating, VDD bounds, input mode DO HighZ when deselected, CLOCK trailing edge latch, output mode DO always driven, CS gating on output latch, nSR_SR polarity, CLEAR in both modes, reset(), VDD removal, component name)
 
 ##### decoder
 

@@ -24,6 +24,7 @@ include(doctest)
 #----------------------------------------------
 
 add_subdirectory(buffer)
+add_subdirectory(chip)
 add_subdirectory(decoder)
 add_subdirectory(discrete)
 add_subdirectory(flipflop)
