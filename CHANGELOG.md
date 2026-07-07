@@ -182,6 +182,7 @@
 
 ##### chip
 
+- `cdp1861C-console-framebuffer`: CDP1861C DMA-driven 64x128 framebuffer fill with checkerboard VRAM, pixel capture via VIDEO shift output
 - `cdp1861C-timing`: CDP1861C first display scanline signal trace, signals sampled after each CLK falling edge over 8 DMA bytes
 
 ##### flipflop
