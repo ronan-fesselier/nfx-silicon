@@ -180,6 +180,10 @@
 
 - `ribbon-cable-transceiver`: SNx4LS245 datasheet typical application: two LS245 as permanently-enabled transceivers across an 8-bit ribbon cable, shared direction control, Master->Slave and Slave->Master transfer, isolation via /OE
 
+##### chip
+
+- `cdp1861C-timing`: CDP1861C first display scanline signal trace, signals sampled after each CLK falling edge over 8 DMA bytes
+
 ##### flipflop
 
 - `bidirectional-bus-driver`: SN74LS374 datasheet typical application: two LS374 transferring data between two 8-bit buses, clock-gated via LS08, output control inverted via LS04
