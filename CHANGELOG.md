@@ -195,6 +195,7 @@
 
 ##### chip
 
+- `cdp1852-io`: CDP1852 input/output port walkthrough, peripheral-to-CPU latch with /SR service request (input mode), CPU-to-peripheral register drive with SR acknowledge (output mode), async CLEAR on both modes
 - `cdp1861C-console-framebuffer`: CDP1861C DMA-driven 64x128 framebuffer fill with checkerboard VRAM, pixel capture via VIDEO shift output
 - `cdp1861C-timing`: CDP1861C first display scanline signal trace, signals sampled after each CLK falling edge over 8 DMA bytes
 - `cdp1861C-display`: CDP1861C RCA logo rendered live in an OpenGL window, DMA-driven 64x128 framebuffer filled each field via VIDEO shift output
