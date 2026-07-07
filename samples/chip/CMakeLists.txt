@@ -2,6 +2,10 @@
 # nfx::silicon::chip - Samples
 #==============================================================================
 
+set(NFX_SILICON_CHIP_SAMPLE_GL_SOURCES
+    cdp1861C-display.cpp
+)
+
 file(GLOB_RECURSE NFX_SILICON_CHIP_SAMPLE_SOURCES CONFIGURE_DEPENDS "*.cpp")
 
 foreach(source IN LISTS NFX_SILICON_CHIP_SAMPLE_SOURCES)
@@ -13,9 +17,18 @@ foreach(source IN LISTS NFX_SILICON_CHIP_SAMPLE_SOURCES)
     add_executable(${target} ${source})
     set_target_properties(${target} PROPERTIES DEBUG_POSTFIX "-d")
 
-    target_link_libraries(${target}
-        PRIVATE
-            nfx::silicon
-            nfx::silicon::warnings
+    if(source_rel IN_LIST NFX_SILICON_CHIP_SAMPLE_GL_SOURCES)
+        target_link_libraries(${target}
+            PRIVATE
+                nfx::silicon
+                nfx::silicon::sample::common
+                nfx::silicon::warnings
     )
+    else()
+        target_link_libraries(${target}
+            PRIVATE
+                nfx::silicon
+                nfx::silicon::warnings
+    )
+    endif()
 endforeach()
