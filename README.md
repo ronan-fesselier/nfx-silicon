@@ -44,6 +44,7 @@ nfx-silicon/
 │       ├── discrete/    # Discrete components (PowerSupply, Resistor, Capacitor, Diode, LED...)
 │       ├── flipflop/    # Flip-flop packages (CD4013B, LS74, LS374)
 │       ├── gate/        # Gate packages (CD4011B, LS00, LS04, LS08, LS32, LS86)
+│       ├── host/        # Host-side abstractions (input)
 │       ├── latch/       # Latch packages (CD4042B, LS373)
 │       ├── memory/      # Memory packages (CDP1832, I2114)
 │       ├── mux/         # Analog mux packages (CD4051B)

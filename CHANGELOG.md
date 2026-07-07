@@ -97,6 +97,11 @@
 - `LS32`: SN74LS32 quad 2-input OR gate (IPassive), DIP-14 pinout, VCC-gated outputs (HighZ when unpowered), four independent Or gates
 - `LS86`: SN74LS86A quad 2-input XOR gate (IPassive), DIP-14 pinout, VCC-gated outputs (HighZ when unpowered), four independent Xor gates
 
+##### host
+
+- `input/KeyCode`: normalized host key codes (KeyCode enum, std::hash specialization)
+- `input/KeyEvent`: normalized host key event payload (KeyEvent struct, pressed/repeat flags)
+
 ##### latch
 
 - `CD4042B`: CD4042B CMOS quad clocked D latch (IDiscrete), DIP-16 pinout, VDD-gated outputs (HighZ when unpowered), four independent latches sharing a common CLOCK and POLARITY, CL=CLOCK XNOR POLARITY enables transparency, pin names per TI datasheet (SCHS040D), 3V-18V supply range
