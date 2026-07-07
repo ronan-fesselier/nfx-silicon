@@ -50,7 +50,7 @@ nfx-silicon/
 │       ├── mux/         # Analog mux packages (CD4051B)
 │       ├── primitive/   # Logic primitives (And, Or, Nand, Nor, Not, Xor, Xnor, DLatch, DFlipFlop, SRLatch, JKFlipFlop)
 │       └── signal/      # Signal layer (Pin, Wire, Bus, PowerRail)
-├── samples/             # Runnable samples demonstrating nfx::silicon circuits
+├── samples/             # Runnable samples demonstrating nfx::silicon circuits and shared sample framework
 ├── src/                 # Implementations
 └── tests/               # Unit tests
 ```

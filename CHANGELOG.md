@@ -181,6 +181,8 @@
 
 #### Samples
 
+- `nfx::silicon::sample::common`: shared Linux/Windows windowed sample runtime with `App` (GL window, `KeyEvent` callbacks) and `GlRenderer` (scissor-based pixel renderer, GL 1.x, no shaders)
+
 ##### buffer
 
 - `ribbon-cable-transceiver`: SNx4LS245 datasheet typical application: two LS245 as permanently-enabled transceivers across an 8-bit ribbon cable, shared direction control, Master->Slave and Slave->Master transfer, isolation via /OE

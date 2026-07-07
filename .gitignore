@@ -83,5 +83,8 @@ coverage/
 *.temp
 *.log
 
+# Dependencies
+3rdParty/
+
 # Local only
 TMP
