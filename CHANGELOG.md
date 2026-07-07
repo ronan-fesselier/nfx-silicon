@@ -14,6 +14,12 @@
 
 - `nfx::silicon::internal::runtime::error`: runtime log infrastructure (`Level`, `Kind`, `log`)
 
+#### CI
+
+- `build-and-test` GitHub Actions workflow: Linux/Windows matrix, GCC/Clang/MinGW/MSVC, tests and sample build coverage, X11 and OpenGL system dependencies, `build-samples` job (Linux GCC/Clang, Windows MinGW/MSVC)
+- `clang-analysis` GitHub Actions workflow: `clang-tidy` and `scan-build` analysis jobs on Linux, X11 and OpenGL system dependencies
+- `codeql` GitHub Actions workflow: scheduled and PR/push CodeQL security analysis (`actions`, `c-cpp`)
+
 #### Components
 
 ##### interfaces

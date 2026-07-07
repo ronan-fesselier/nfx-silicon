@@ -40,7 +40,9 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build
+          sudo apt-get install -y cmake ninja-build \
+          libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev \
+          xvfb mesa-utils libgl1-mesa-dri libgl1-mesa-dev
 
       - name: Install GCC (Linux)
         if: runner.os == 'Linux' && matrix.toolchain == 'gcc'
@@ -74,6 +76,7 @@ jobs:
           cmake -S . -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=Debug \
             -DNFX_SILICON_BUILD_TESTS=ON \
+            -DNFX_SILICON_BUILD_SAMPLES=OFF \
             -DNFX_SILICON_ENABLE_NATIVE_OPTIMIZATIONS=OFF \
             -DNFX_SILICON_WARNINGS_AS_ERRORS=ON
 
@@ -95,6 +98,7 @@ jobs:
             -DCMAKE_C_COMPILER=gcc \
             -DCMAKE_CXX_COMPILER=g++ \
             -DNFX_SILICON_BUILD_TESTS=ON \
+            -DNFX_SILICON_BUILD_SAMPLES=OFF \
             -DNFX_SILICON_ENABLE_NATIVE_OPTIMIZATIONS=OFF \
             -DNFX_SILICON_WARNINGS_AS_ERRORS=ON
 
@@ -118,6 +122,7 @@ jobs:
           cmake -S . -B build
           -G "Visual Studio 17 2022" -A x64
           -DNFX_SILICON_BUILD_TESTS=ON
+          -DNFX_SILICON_BUILD_SAMPLES=OFF
           -DNFX_SILICON_ENABLE_NATIVE_OPTIMIZATIONS=OFF
           -DNFX_SILICON_WARNINGS_AS_ERRORS=ON
 
@@ -128,3 +133,110 @@ jobs:
       - name: Run tests (Windows MSVC)
         if: runner.os == 'Windows' && matrix.toolchain == 'msvc'
         run: ctest --test-dir build --build-config Debug --output-on-failure
+
+
+  build-samples:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            toolchain: gcc
+          - os: ubuntu-24.04
+            toolchain: clang
+
+          - os: windows-2022
+            toolchain: mingw
+          - os: windows-2022
+            toolchain: msvc
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # Linux deps
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build \
+          libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev \
+          xvfb mesa-utils libgl1-mesa-dri libgl1-mesa-dev
+
+      - name: Install GCC (Linux)
+        if: runner.os == 'Linux' && matrix.toolchain == 'gcc'
+        run: |
+          sudo apt-get install -y g++
+
+      - name: Install Clang (Linux)
+        if: runner.os == 'Linux' && matrix.toolchain == 'clang'
+        run: |
+          sudo apt-get install -y clang
+
+      # Windows toolchains
+      - name: Setup MSYS2 (MinGW)
+        if: runner.os == 'Windows' && matrix.toolchain == 'mingw'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+
+      # Linux (GCC/Clang) samples
+      - name: Configure (Linux) - samples ON
+        if: runner.os == 'Linux'
+        env:
+          CC: ${{ matrix.toolchain }}
+          CXX: ${{ matrix.toolchain == 'gcc' && 'g++' || 'clang++' }}
+        run: |
+          cmake -S . -B build-samples -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DNFX_SILICON_BUILD_TESTS=OFF \
+            -DNFX_SILICON_BUILD_SAMPLES=ON \
+            -DNFX_SILICON_ENABLE_NATIVE_OPTIMIZATIONS=OFF \
+            -DNFX_SILICON_WARNINGS_AS_ERRORS=ON
+
+      - name: Build samples (Linux)
+        if: runner.os == 'Linux'
+        run: cmake --build build-samples --parallel
+
+      # Windows MinGW samples
+      - name: Configure (Windows MinGW) - samples ON
+        if: runner.os == 'Windows' && matrix.toolchain == 'mingw'
+        shell: msys2 {0}
+        run: |
+          cmake -S . -B build-samples -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER=gcc \
+            -DCMAKE_CXX_COMPILER=g++ \
+            -DNFX_SILICON_BUILD_TESTS=OFF \
+            -DNFX_SILICON_BUILD_SAMPLES=ON \
+            -DNFX_SILICON_ENABLE_NATIVE_OPTIMIZATIONS=OFF \
+            -DNFX_SILICON_WARNINGS_AS_ERRORS=ON
+
+      - name: Build samples (Windows MinGW)
+        if: runner.os == 'Windows' && matrix.toolchain == 'mingw'
+        shell: msys2 {0}
+        run: |
+          cmake --build build-samples --parallel
+
+      # Windows MSVC samples
+      - name: Configure (Windows MSVC) - samples ON
+        if: runner.os == 'Windows' && matrix.toolchain == 'msvc'
+        shell: pwsh
+        run: >
+          cmake -S . -B build-samples
+          -G "Visual Studio 17 2022" -A x64
+          -DNFX_SILICON_BUILD_TESTS=OFF
+          -DNFX_SILICON_BUILD_SAMPLES=ON
+          -DNFX_SILICON_ENABLE_NATIVE_OPTIMIZATIONS=OFF
+          -DNFX_SILICON_WARNINGS_AS_ERRORS=ON
+
+      - name: Build samples (Windows MSVC)
+        if: runner.os == 'Windows' && matrix.toolchain == 'msvc'
+        run: cmake --build build-samples --config Release --parallel

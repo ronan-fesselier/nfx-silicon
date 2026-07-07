@@ -24,7 +24,9 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build clang clang-tidy clang-tools
+          sudo apt-get install -y cmake ninja-build clang clang-tidy clang-tools \
+            libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev \
+            xvfb mesa-utils libgl1-mesa-dri libgl1-mesa-dev
 
       - name: Configure (clang-tidy)
         run: |
@@ -34,6 +36,7 @@ jobs:
             -DCMAKE_CXX_COMPILER=clang++ \
             -DCMAKE_CXX_CLANG_TIDY=clang-tidy \
             -DNFX_SILICON_BUILD_TESTS=OFF \
+            -DNFX_SILICON_BUILD_SAMPLES=ON \
             -DNFX_SILICON_ENABLE_NATIVE_OPTIMIZATIONS=OFF \
             -DNFX_SILICON_WARNINGS_AS_ERRORS=ON
 
@@ -50,7 +53,9 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build clang clang-tools
+          sudo apt-get install -y cmake ninja-build clang clang-tidy clang-tools \
+            libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev \
+            xvfb mesa-utils libgl1-mesa-dri libgl1-mesa-dev
 
       - name: Configure (scan-build)
         run: |
@@ -59,6 +64,7 @@ jobs:
             -DCMAKE_C_COMPILER=clang \
             -DCMAKE_CXX_COMPILER=clang++ \
             -DNFX_SILICON_BUILD_TESTS=OFF \
+            -DNFX_SILICON_BUILD_SAMPLES=ON \
             -DNFX_SILICON_ENABLE_NATIVE_OPTIMIZATIONS=OFF \
             -DNFX_SILICON_WARNINGS_AS_ERRORS=ON
 
