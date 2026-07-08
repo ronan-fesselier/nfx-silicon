@@ -74,6 +74,7 @@
 
 ##### chip
 
+- `CDP1802`: RCA CDP1802 8-bit microprocessor (IDiscrete, IInspectable), DIP-40 pinout, VDD-gated outputs (HighZ when unpowered), 8-clock machine cycle with TPA/TPB strobes, SC1/SC0 state code driven from persistent cycle state, multiplexed 16-bit address bus (MA0..MA7 high byte at TPA, low byte at TPB), bidirectional 8-bit BUS, nMRD/nMWR read/write strobes, nDMAI/nDMAO DMA channels with R(0) auto-increment, nINT interrupt with X:P save in T, nCLEAR reset (I=N=Q=0, IE=1, X=P=R(0)=0), nWAIT pause, /EF1../EF4 external flags sampled at S1 start, N0..N2 I/O port lines, inspect() exposes D/DF/R0..RF/P/X/T/IE/Q, pin names per RCA/Intersil CDP1802 datasheet, 4V-10.5V supply range
 - `CDP1852`: RCA CDP1852 byte-wide mode-programmable I/O port (IDiscrete), DIP-24 pinout, VDD-gated outputs (HighZ when unpowered), MODE Low=input port / High=output port, CLOCK trailing edge latches 8-bit DI register, CS1/CS1+CS2 dual chip select, async CLEAR resets register, bidirectional /SR/SR service-request flag, pin names per RCA CDP1852 datasheet, 4V-10.5V supply range
 - `CDP1861`: RCA CDP1861C video display controller / Pixie (IDiscrete), DIP-24 pinout, VDD-gated outputs (HighZ when unpowered), TPA/TPB line and field counters with SC0/SC1 resync, DMAO/INT/EFX timed off the 128-line display window, one-load-per-TPB-assertion 8-bit shift register driving VIDEO MSB-first, pin names per RCA CDP1861C datasheet, 4V-6V supply range 
 
@@ -154,7 +155,7 @@
 
 ##### chip
 
-- `tests_cdp1xxx`: unit tests for CDP1852 (construction, DIP-24 pin names, Terminal enum, power gating, VDD bounds, input mode DO HighZ when deselected, CLOCK trailing edge latch, output mode DO always driven, CS gating on output latch, nSR_SR polarity, CLEAR in both modes, reset(), VDD removal, component name)
+`tests_cdp1xxx`: unit tests for CDP1852, CDP1861, CDP1802 (construction, pin names, Terminal enum, power gating, VDD bounds, reset/CLEAR, machine cycle timing, VDD removal, component name)
 
 ##### decoder
 
