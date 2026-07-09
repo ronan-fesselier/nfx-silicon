@@ -8,7 +8,7 @@
 
 - `nfx::silicon`: C++ library dedicated to hardware emulation
 - `Silicon.h`: umbrella header for the full `nfx::silicon` public API
-- `Types.h`: shared scalar types (`Level`, `Voltage`, `Cycles`, `Tick`)
+- `Types.h`: shared scalar types (`Level`, `Voltage`, `Cycles`, `Tick`, `Address`)
 
 #### Internal runtime
 
@@ -133,6 +133,10 @@
 - `tests_Pin`: unit tests for Pin drive, read, release, and observer notifications
 - `tests_Wire`: unit tests for Wire attach, resolve, and propagation models
 - `tests_Bus`: unit tests for Bus construction, width, wire access, and read
+
+##### types
+
+- `tests_Address`: unit tests for Address construction, equality, ordering, arithmetic, and std::hash
 
 ##### discrete
 
