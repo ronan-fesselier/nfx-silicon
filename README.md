@@ -36,7 +36,7 @@ nfx-silicon/
 ├── include/nfx/
 │   ├── Silicon.h        # Top-level nfx::silicon API entry point
 │   └── silicon/
-│       ├── Types.h      # Shared scalar types (Level, Voltage)
+│       ├── Types.h      # Shared scalar types (Level, Voltage, Cycles, Tick)
 │       ├── buffer/      # Buffer packages (CD4049UB, CD4050B, LS245)
 │       ├── chip/        # Chip packages (CDP1802, CDP1852, CDP1861)
 │       ├── component/   # Component interfaces (IComponent, IPassive, IDipole, IDiscrete, IInspectable)

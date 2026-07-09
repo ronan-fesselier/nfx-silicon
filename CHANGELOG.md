@@ -8,7 +8,7 @@
 
 - `nfx::silicon`: C++ library dedicated to hardware emulation
 - `Silicon.h`: umbrella header for the full `nfx::silicon` public API
-- `Types.h`: shared scalar types (`Level`, `Voltage`)
+- `Types.h`: shared scalar types (`Level`, `Voltage`, `Cycles`, `Tick`)
 
 #### Internal runtime
 

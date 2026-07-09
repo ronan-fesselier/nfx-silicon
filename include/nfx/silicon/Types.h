@@ -22,5 +22,7 @@ namespace nfx::silicon
         HighZ    // High-impedance (tristate, not driven)
     };
 
+    using Cycles = std::uint32_t;         ///< Cycle count consumed by one instruction
+    using Tick = std::uint64_t;           ///< Cumulative simulation clock counter
     using Voltage = std::optional<float>; ///< Analog voltage, nullopt = floating
 } // namespace nfx::silicon
