@@ -1,5 +1,7 @@
 #include "nfx/silicon/chip/cdp1xxx/CDP1802.h"
 
+#include "internal/CDP1802/Spec.h"
+
 #include "internal/runtime/Error.h"
 
 #include <cassert>
@@ -641,8 +643,13 @@ namespace nfx::silicon::chip::cdp1xxx
         m_io.efSampled[2] = (m_pinNEF3.read<Level>() == Level::Low);
         m_io.efSampled[3] = (m_pinNEF4.read<Level>() == Level::Low);
 
-        updateN(0);
-        // TODO: dispatch m_registers.I / m_registers.N to instruction table
+        const uint8_t opcode = static_cast<uint8_t>((m_registers.I << 4u) | m_registers.N);
+        const Cycles cycles = cdp1802internal::cdp1802Dispatch(*this, opcode);
+
+        if (m_exec.executePhase == 0 && cycles > Cycles{ 2 })
+        {
+            m_exec.extraExecuteCycles = static_cast<uint8_t>(cycles - 2u);
+        }
     }
 
     void CDP1802::dmaIn()
