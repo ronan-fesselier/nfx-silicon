@@ -222,3 +222,131 @@ TEST_SUITE("chip::cdp1xxx::CDP1802 RegisterOperations")
         CHECK(u.inspect("R1")->value == 0xABCDu);
     }
 }
+
+TEST_SUITE("chip::cdp1xxx::CDP1802 LogicOperations")
+{
+    TEST_CASE("OR: M(R(X)) OR D->D")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x0F); // LDI 0x0F -> D=0x0F
+        driveBus(u, 0xF1);             // fetch OR
+        clockN(u, 8);
+        driveBus(u, 0xF0); // M(R(X=0))=0xF0 during execute
+        clockN(u, 8);
+        CHECK(u.inspect("D")->value == 0xFFu);
+    }
+
+    TEST_CASE("ORI: M(R(P)) OR D->D, R(P)+1->R(P)")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x0F); // LDI 0x0F -> D=0x0F
+        runInstruction(u, 0xF9, 0xF0); // ORI 0xF0 -> D=0xFF
+        CHECK(u.inspect("D")->value == 0xFFu);
+    }
+
+    TEST_CASE("XOR: M(R(X)) XOR D->D")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0xFF); // LDI 0xFF -> D=0xFF
+        driveBus(u, 0xF3);             // fetch XOR
+        clockN(u, 8);
+        driveBus(u, 0xFF); // M(R(X=0))=0xFF during execute
+        clockN(u, 8);
+        CHECK(u.inspect("D")->value == 0x00u);
+    }
+
+    TEST_CASE("XRI: M(R(P)) XOR D->D, R(P)+1->R(P)")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0xFF); // LDI 0xFF -> D=0xFF
+        runInstruction(u, 0xFB, 0xFF); // XRI 0xFF -> D=0x00
+        CHECK(u.inspect("D")->value == 0x00u);
+    }
+
+    TEST_CASE("AND: M(R(X)) AND D->D")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0xFF); // LDI 0xFF -> D=0xFF
+        driveBus(u, 0xF2);             // fetch AND
+        clockN(u, 8);
+        driveBus(u, 0x0F); // M(R(X=0))=0x0F during execute
+        clockN(u, 8);
+        CHECK(u.inspect("D")->value == 0x0Fu);
+    }
+
+    TEST_CASE("ANI: M(R(P)) AND D->D, R(P)+1->R(P)")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0xFF); // LDI 0xFF -> D=0xFF
+        runInstruction(u, 0xFA, 0x0F); // ANI 0x0F -> D=0x0F
+        CHECK(u.inspect("D")->value == 0x0Fu);
+    }
+
+    TEST_CASE("SHR: D>>1->D, D.0->DF, 0->D.7")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x81); // LDI 0x81 -> D=0x81
+        runInstruction(u, 0xF6, 0x00); // SHR -> D=0x40, DF=1
+        CHECK(u.inspect("D")->value == 0x40u);
+        CHECK(u.inspect("DF")->value == 1u);
+    }
+
+    TEST_CASE("SHRC: D>>1->D, D.0->DF, DF->D.7")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x81); // LDI 0x81 -> D=0x81
+        runInstruction(u, 0xF6, 0x00); // SHR -> D=0x40, DF=1
+        runInstruction(u, 0x76, 0x00); // SHRC: D=0x40, DF=1 -> D=0xA0, DF=0
+        CHECK(u.inspect("D")->value == 0xA0u);
+        CHECK(u.inspect("DF")->value == 0u);
+    }
+
+    TEST_CASE("SHL: D<<1->D, D.7->DF, 0->D.0")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x81); // LDI 0x81 -> D=0x81
+        runInstruction(u, 0xFE, 0x00); // SHL -> D=0x02, DF=1
+        CHECK(u.inspect("D")->value == 0x02u);
+        CHECK(u.inspect("DF")->value == 1u);
+    }
+
+    TEST_CASE("SHLC: D<<1->D, D.7->DF, DF->D.0")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x81); // LDI 0x81 -> D=0x81
+        runInstruction(u, 0xFE, 0x00); // SHL -> D=0x02, DF=1
+        runInstruction(u, 0x7E, 0x00); // SHLC: D=0x02, DF=1 -> D=0x05, DF=0
+        CHECK(u.inspect("D")->value == 0x05u);
+        CHECK(u.inspect("DF")->value == 0u);
+    }
+}

@@ -1,4 +1,5 @@
 #include "nfx/silicon/chip/cdp1xxx/CDP1802.h"
+#include "instructions/LogicOperations.h"
 #include "instructions/MemoryReference.h"
 #include "instructions/RegisterOperations.h"
 #include "internal/cpu/InstructionLookup.h"
@@ -192,18 +193,18 @@ namespace nfx::silicon::chip::cdp1xxx::cdp1802internal
             CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_PHI , "PHI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_Bn },
 
             // Logic operations
-            CDP1802InstructionSpec{ MASK_FULL       , OP_OR  , "OR"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_ORI , "ORI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_XOR , "XOR"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_XRI , "XRI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_AND , "AND"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_ANI , "ANI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SHR , "SHR"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SHRC, "SHRC"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SHRC, "RSHR"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SHL , "SHL"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SHLC, "SHLC"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SHLC, "RSHL"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_OR  , "OR"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_F1 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_ORI , "ORI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_F9 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_XOR , "XOR"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_F3 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_XRI , "XRI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_FB },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_AND , "AND"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_F2 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_ANI , "ANI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_FA },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SHR , "SHR"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_F6 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SHRC, "SHRC"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_76 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SHRC, "RSHR"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_76 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SHL , "SHL"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_FE },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SHLC, "SHLC"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_7E },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SHLC, "RSHL"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_7E },
 
             // Arithmetic operations
             CDP1802InstructionSpec{ MASK_FULL       , OP_ADD , "ADD"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },

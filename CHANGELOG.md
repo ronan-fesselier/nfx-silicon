@@ -160,7 +160,7 @@
 ##### chip
 
 `tests_cdp1xxx`: unit tests for CDP1852, CDP1861, CDP1802 (construction, pin names, Terminal enum, power gating, VDD bounds, reset/CLEAR, machine cycle timing, VDD removal, component name)
-`tests_cdp1802`: unit tests for CDP1802 memory reference instructions (LDI, LDN, STR, STXD) with nMWR pulse timing verification, register operations (INC, DEC, IRX, GLO, GHI, PLO, PHI)
+`tests_cdp1802`: unit tests for CDP1802 memory reference instructions (LDI, LDN, STR, STXD) with nMWR pulse timing verification, register operations (INC, DEC, IRX, GLO, GHI, PLO, PHI), logic operations (OR, ORI, XOR, XRI, AND, ANI, SHR, SHRC, SHL, SHLC)
 
 ##### decoder
 
