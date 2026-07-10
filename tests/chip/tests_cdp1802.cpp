@@ -138,3 +138,87 @@ TEST_SUITE("chip::cdp1xxx::CDP1802 MemoryReference")
         CHECK(u.inspect("R0")->value == 0x0000u);
     }
 }
+
+TEST_SUITE("chip::cdp1xxx::CDP1802 RegisterOperations")
+{
+    TEST_CASE("INC: R(N)+1->R(N)")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0x11, 0x00); // INC R(1), R(1)=0x0000 at reset
+        CHECK(u.inspect("R1")->value == 0x0001u);
+    }
+
+    TEST_CASE("DEC: R(N)-1->R(N) wraps at 0")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0x21, 0x00); // DEC R(1), R(1)=0x0000 -> 0xFFFF
+        CHECK(u.inspect("R1")->value == 0xFFFFu);
+    }
+
+    TEST_CASE("IRX: R(X)+1->R(X)")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // X=0 at reset, after fetch R(0)=0x0001, IRX increments to 0x0002
+        runInstruction(u, 0x60, 0x00);
+        CHECK(u.inspect("R0")->value == 0x0002u);
+    }
+
+    TEST_CASE("GLO: R(N).lo->D")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0xCD); // LDI 0xCD -> D=0xCD
+        runInstruction(u, 0xA1, 0x00); // PLO R(1) -> R(1).lo=0xCD
+        runInstruction(u, 0x81, 0x00); // GLO R(1) -> D=0xCD
+        CHECK(u.inspect("D")->value == 0xCDu);
+    }
+
+    TEST_CASE("GHI: R(N).hi->D")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0xAB); // LDI 0xAB -> D=0xAB
+        runInstruction(u, 0xB1, 0x00); // PHI R(1) -> R(1).hi=0xAB
+        runInstruction(u, 0x91, 0x00); // GHI R(1) -> D=0xAB
+        CHECK(u.inspect("D")->value == 0xABu);
+    }
+
+    TEST_CASE("PLO: D->R(N).lo, hi unchanged")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0xAB); // LDI 0xAB
+        runInstruction(u, 0xB1, 0x00); // PHI R(1) -> R(1)=0xAB00
+        runInstruction(u, 0xF8, 0xCD); // LDI 0xCD
+        runInstruction(u, 0xA1, 0x00); // PLO R(1) -> R(1)=0xABCD
+        CHECK(u.inspect("R1")->value == 0xABCDu);
+    }
+
+    TEST_CASE("PHI: D->R(N).hi, lo unchanged")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0xCD); // LDI 0xCD
+        runInstruction(u, 0xA1, 0x00); // PLO R(1) -> R(1)=0x00CD
+        runInstruction(u, 0xF8, 0xAB); // LDI 0xAB
+        runInstruction(u, 0xB1, 0x00); // PHI R(1) -> R(1)=0xABCD
+        CHECK(u.inspect("R1")->value == 0xABCDu);
+    }
+}

@@ -1,5 +1,6 @@
 #include "nfx/silicon/chip/cdp1xxx/CDP1802.h"
 #include "instructions/MemoryReference.h"
+#include "instructions/RegisterOperations.h"
 #include "internal/cpu/InstructionLookup.h"
 #include "Spec.h"
 
@@ -182,13 +183,13 @@ namespace nfx::silicon::chip::cdp1xxx::cdp1802internal
             CDP1802InstructionSpec{ MASK_FULL       , OP_STXD, "STXD"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_73 },
 
             // Register operations
-            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_INC , "INC"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },
-            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_DEC , "DEC"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_IRX , "IRX"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },
-            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_GLO , "GLO"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },
-            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_PLO , "PLO"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },
-            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_GHI , "GHI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },
-            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_PHI , "PHI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },
+            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_INC , "INC"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_1n },
+            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_DEC , "DEC"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_2n },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_IRX , "IRX"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_60 },
+            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_GLO , "GLO"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_8n },
+            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_PLO , "PLO"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_An },
+            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_GHI , "GHI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_9n },
+            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_PHI , "PHI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_Bn },
 
             // Logic operations
             CDP1802InstructionSpec{ MASK_FULL       , OP_OR  , "OR"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
