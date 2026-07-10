@@ -17,6 +17,11 @@
 
 namespace nfx::silicon::chip::cdp1xxx
 {
+    namespace cdp1802internal
+    {
+        struct ExecutionContext;
+    } // namespace cdp1802internal
+
     /**
      * \class CDP1802
      * \brief RCA CDP1802 8-bit microprocessor in a DIP-40 package.
@@ -203,6 +208,8 @@ namespace nfx::silicon::chip::cdp1xxx
         [[nodiscard]] virtual std::optional<component::InspectValue> inspect(const char* name) const override;
 
     private:
+        friend struct cdp1802internal::ExecutionContext;
+
         void onVDD(Voltage v);
         void onClock(Level clk);
         void onNClear(Level lvl);

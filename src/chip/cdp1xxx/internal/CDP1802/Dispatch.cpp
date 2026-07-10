@@ -1,4 +1,5 @@
 #include "nfx/silicon/chip/cdp1xxx/CDP1802.h"
+#include "instructions/MemoryReference.h"
 #include "internal/cpu/InstructionLookup.h"
 #include "Spec.h"
 
@@ -172,13 +173,13 @@ namespace nfx::silicon::chip::cdp1xxx::cdp1802internal
             CDP1802InstructionSpec{ MASK_FULL       , OP_IDL , "IDL"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
 
             // Memory reference
-            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_LDN , "LDN"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_LDA , "LDA"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LDX , "LDX"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LDXA, "LDXA"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LDI , "LDI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_STR , "STR"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_STXD, "STXD"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_stub },
+            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_LDN , "LDN"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_0n },
+            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_LDA , "LDA"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_4n },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LDX , "LDX"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_F0 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LDXA, "LDXA"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_72 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LDI , "LDI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_F8 },
+            CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_STR , "STR"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_5n },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_STXD, "STXD"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_73 },
 
             // Register operations
             CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_INC , "INC"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },
