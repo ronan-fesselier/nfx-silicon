@@ -1,4 +1,5 @@
 #include "nfx/silicon/chip/cdp1xxx/CDP1802.h"
+#include "instructions/ArithmeticOperations.h"
 #include "instructions/LogicOperations.h"
 #include "instructions/MemoryReference.h"
 #include "instructions/RegisterOperations.h"
@@ -207,18 +208,18 @@ namespace nfx::silicon::chip::cdp1xxx::cdp1802internal
             CDP1802InstructionSpec{ MASK_FULL       , OP_SHLC, "RSHL"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_7E },
 
             // Arithmetic operations
-            CDP1802InstructionSpec{ MASK_FULL       , OP_ADD , "ADD"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_ADI , "ADI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_ADC , "ADC"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_ADCI, "ADCI"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SD  , "SD"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SDI , "SDI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SDB , "SDB"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SDBI, "SDBI"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SM  , "SM"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SMI , "SMI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SMB , "SMB"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SMBI, "SMBI"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_ADD , "ADD"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_F4 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_ADI , "ADI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_FC },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_ADC , "ADC"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_74 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_ADCI, "ADCI"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_7C },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SD  , "SD"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_F5 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SDI , "SDI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_FD },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SDB , "SDB"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_75 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SDBI, "SDBI"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_7D },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SM  , "SM"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_F7 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SMI , "SMI"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_FF },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SMB , "SMB"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_77 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SMBI, "SMBI"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_7F },
 
             // Short branch instructions
             CDP1802InstructionSpec{ MASK_FULL       , OP_BR  , "BR"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },

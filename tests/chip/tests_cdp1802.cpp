@@ -350,3 +350,268 @@ TEST_SUITE("chip::cdp1xxx::CDP1802 LogicOperations")
         CHECK(u.inspect("DF")->value == 0u);
     }
 }
+
+TEST_SUITE("chip::cdp1xxx::CDP1802 ArithmeticOperations")
+{
+    TEST_CASE("ADD: M(R(X))+D->DF,D")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0xF0); // LDI 0xF0 -> D=0xF0
+        driveBus(u, 0xF4);             // fetch ADD
+        clockN(u, 8);
+        driveBus(u, 0x20); // M(R(X=0))=0x20 during execute
+        clockN(u, 8);
+        CHECK(u.inspect("D")->value == 0x10u);
+        CHECK(u.inspect("DF")->value == 1u); // carry
+    }
+
+    TEST_CASE("ADI: M(R(P))+D->DF,D, R(P)+1->R(P)")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        runInstruction(u, 0xFC, 0xFF); // ADI 0xFF -> D=0x00, DF=1
+        CHECK(u.inspect("D")->value == 0x00u);
+        CHECK(u.inspect("DF")->value == 1u);
+    }
+
+    TEST_CASE("ADC: M(R(X))+D+DF->DF,D")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        runInstruction(u, 0xFC, 0xFF); // ADI 0xFF -> D=0x00, DF=1
+        driveBus(u, 0x74);             // fetch ADC
+        clockN(u, 8);
+        driveBus(u, 0x01); // M(R(X=0))=0x01, D=0x00, DF=1 -> D=0x02, DF=0
+        clockN(u, 8);
+        CHECK(u.inspect("D")->value == 0x02u);
+        CHECK(u.inspect("DF")->value == 0u);
+    }
+
+    TEST_CASE("ADI: no carry when result fits in 8 bits")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x10); // LDI 0x10
+        runInstruction(u, 0xFC, 0x20); // ADI 0x20 -> D=0x30, DF=0
+        CHECK(u.inspect("D")->value == 0x30u);
+        CHECK(u.inspect("DF")->value == 0u);
+    }
+
+    TEST_CASE("SD: M(R(X))-D->DF,D, DF=1 if no borrow")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        driveBus(u, 0xF5);             // fetch SD
+        clockN(u, 8);
+        driveBus(u, 0x03); // M(R(X=0))=0x03, 0x03-0x01=0x02, no borrow -> DF=1
+        clockN(u, 8);
+        CHECK(u.inspect("D")->value == 0x02u);
+        CHECK(u.inspect("DF")->value == 1u);
+    }
+
+    TEST_CASE("SD: borrow sets DF=0")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x05); // LDI 0x05 -> D=0x05
+        driveBus(u, 0xF5);             // fetch SD
+        clockN(u, 8);
+        driveBus(u, 0x02); // M(R(X=0))=0x02, 0x02-0x05 -> borrow -> DF=0
+        clockN(u, 8);
+        CHECK(u.inspect("DF")->value == 0u);
+    }
+
+    TEST_CASE("SDI: M(R(P))-D->DF,D, R(P)+1->R(P)")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        runInstruction(u, 0xFD, 0x05); // SDI 0x05, 0x05-0x01=0x04, no borrow -> DF=1
+        CHECK(u.inspect("D")->value == 0x04u);
+        CHECK(u.inspect("DF")->value == 1u);
+    }
+
+    TEST_CASE("SM: D-M(R(X))->DF,D, DF=1 if no borrow")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x05); // LDI 0x05 -> D=0x05
+        driveBus(u, 0xF7);             // fetch SM
+        clockN(u, 8);
+        driveBus(u, 0x03); // M(R(X=0))=0x03, 0x05-0x03=0x02, no borrow -> DF=1
+        clockN(u, 8);
+        CHECK(u.inspect("D")->value == 0x02u);
+        CHECK(u.inspect("DF")->value == 1u);
+    }
+
+    TEST_CASE("SMI: D-M(R(P))->DF,D, R(P)+1->R(P)")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x05); // LDI 0x05 -> D=0x05
+        runInstruction(u, 0xFF, 0x03); // SMI 0x03, 0x05-0x03=0x02, no borrow -> DF=1
+        CHECK(u.inspect("D")->value == 0x02u);
+        CHECK(u.inspect("DF")->value == 1u);
+    }
+
+    TEST_CASE("ADCI: M(R(P))+D+DF->DF,D, carry-in=0")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // DF=0 after reset
+        runInstruction(u, 0xF8, 0x10); // LDI 0x10 -> D=0x10
+        runInstruction(u, 0x7C, 0x05); // ADCI 0x05, 0x10+0x05+0=0x15, no carry -> DF=0
+        CHECK(u.inspect("D")->value == 0x15u);
+        CHECK(u.inspect("DF")->value == 0u);
+    }
+
+    TEST_CASE("ADCI: M(R(P))+D+DF->DF,D, carry-in=1")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        runInstruction(u, 0xFC, 0xFF); // ADI 0xFF, 0x01+0xFF=0x100 -> DF=1
+        runInstruction(u, 0x7C, 0x05); // ADCI 0x05, 0x00+0x05+1=0x06, no carry -> DF=0
+        CHECK(u.inspect("D")->value == 0x06u);
+        CHECK(u.inspect("DF")->value == 0u);
+    }
+
+    TEST_CASE("SDB: M(R(X))-D-(NOT DF)->DF,D, no borrow-in")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // DF=0 after reset, NOT DF=1
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        driveBus(u, 0x75);             // fetch SDB
+        clockN(u, 8);
+        driveBus(u, 0x05); // M(R(X=0))=0x05, 0x05-0x01-1=0x03, no borrow -> DF=1
+        clockN(u, 8);
+        CHECK(u.inspect("D")->value == 0x03u);
+        CHECK(u.inspect("DF")->value == 1u);
+    }
+
+    TEST_CASE("SDB: M(R(X))-D-(NOT DF)->DF,D, borrow")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // DF=0 after reset, NOT DF=1
+        runInstruction(u, 0xF8, 0x05); // LDI 0x05 -> D=0x05
+        driveBus(u, 0x75);             // fetch SDB
+        clockN(u, 8);
+        driveBus(u, 0x02); // M(R(X=0))=0x02, 0x02-0x05-1 -> borrow -> DF=0
+        clockN(u, 8);
+        CHECK(u.inspect("DF")->value == 0u);
+    }
+
+    TEST_CASE("SDBI: M(R(P))-D-(NOT DF)->DF,D, no borrow-in")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // DF=0 after reset, NOT DF=1
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        runInstruction(u, 0x7D, 0x05); // SDBI 0x05, 0x05-0x01-1=0x03, no borrow -> DF=1
+        CHECK(u.inspect("D")->value == 0x03u);
+        CHECK(u.inspect("DF")->value == 1u);
+    }
+
+    TEST_CASE("SDBI: M(R(P))-D-(NOT DF)->DF,D, borrow-in")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        runInstruction(u, 0xFC, 0xFF); // ADI 0xFF -> DF=1 (carry out), NOT DF=0
+        runInstruction(u, 0x7D, 0x05); // SDBI 0x05, 0x00+0x05-0=0x05, no borrow -> DF=1
+        CHECK(u.inspect("D")->value == 0x05u);
+        CHECK(u.inspect("DF")->value == 1u);
+    }
+
+    TEST_CASE("SMB: D-M(R(X))-(NOT DF)->DF,D, no borrow-in")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // DF=0 after reset, NOT DF=1
+        runInstruction(u, 0xF8, 0x05); // LDI 0x05 -> D=0x05
+        driveBus(u, 0x77);             // fetch SMB
+        clockN(u, 8);
+        driveBus(u, 0x02); // M(R(X=0))=0x02, 0x05-0x02-1=0x02, no borrow -> DF=1
+        clockN(u, 8);
+        CHECK(u.inspect("D")->value == 0x02u);
+        CHECK(u.inspect("DF")->value == 1u);
+    }
+
+    TEST_CASE("SMB: D-M(R(X))-(NOT DF)->DF,D, borrow")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // DF=0 after reset, NOT DF=1
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        driveBus(u, 0x77);             // fetch SMB
+        clockN(u, 8);
+        driveBus(u, 0x05); // M(R(X=0))=0x05, 0x01-0x05-1 -> borrow -> DF=0
+        clockN(u, 8);
+        CHECK(u.inspect("DF")->value == 0u);
+    }
+
+    TEST_CASE("SMBI: D-M(R(P))-(NOT DF)->DF,D, no borrow-in")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // DF=0 after reset, NOT DF=1
+        runInstruction(u, 0xF8, 0x05); // LDI 0x05 -> D=0x05
+        runInstruction(u, 0x7F, 0x02); // SMBI 0x02, 0x05-0x02-1=0x02, no borrow -> DF=1
+        CHECK(u.inspect("D")->value == 0x02u);
+        CHECK(u.inspect("DF")->value == 1u);
+    }
+
+    TEST_CASE("SMBI: D-M(R(P))-(NOT DF)->DF,D, borrow-in")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        runInstruction(u, 0xFC, 0xFF); // ADI 0xFF, 0x01+0xFF=0x100 -> D=0x00, DF=1, NOT DF=0
+        runInstruction(u, 0x7F, 0x02); // SMBI 0x02, 0x00-0x02-0 -> borrow -> DF=0
+        CHECK(u.inspect("DF")->value == 0u);
+    }
+}
