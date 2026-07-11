@@ -1,8 +1,10 @@
 #include "nfx/silicon/chip/cdp1xxx/CDP1802.h"
 #include "instructions/ArithmeticOperations.h"
+#include "instructions/BranchInstructions.h"
 #include "instructions/LogicOperations.h"
 #include "instructions/MemoryReference.h"
 #include "instructions/RegisterOperations.h"
+#include "instructions/SkipInstructions.h"
 #include "internal/cpu/InstructionLookup.h"
 #include "Spec.h"
 
@@ -222,47 +224,47 @@ namespace nfx::silicon::chip::cdp1xxx::cdp1802internal
             CDP1802InstructionSpec{ MASK_FULL       , OP_SMBI, "SMBI"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_7F },
 
             // Short branch instructions
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BR  , "BR"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BQ  , "BQ"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BZ  , "BZ"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BDF , "BDF"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BPZ , "BPZ"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BGE , "BGE"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_B1  , "B1"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_B2  , "B2"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_B3  , "B3"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_B4  , "B4"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_NBR , "NBR"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BNQ , "BNQ"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BNZ , "BNZ"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BNF , "BNF"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BM  , "BM"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BL  , "BL"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BN1 , "BN1"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BN2 , "BN2"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BN3 , "BN3"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_BN4 , "BN4"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BR  , "BR"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_30 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BQ  , "BQ"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_31 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BZ  , "BZ"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_32 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BDF , "BDF"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_33 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BPZ , "BPZ"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_33 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BGE , "BGE"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_33 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_B1  , "B1"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_34 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_B2  , "B2"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_35 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_B3  , "B3"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_36 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_B4  , "B4"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_37 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_NBR , "NBR"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_38 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BNQ , "BNQ"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_39 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BNZ , "BNZ"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_3A },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BNF , "BNF"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_3B },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BM  , "BM"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_3B },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BL  , "BL"    , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_3B },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BN1 , "BN1"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_3C },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BN2 , "BN2"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_3D },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BN3 , "BN3"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_3E },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_BN4 , "BN4"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_3F },
 
             // Long branch instructions
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LBR , "LBR"   , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_NLBR, "NLBR"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LBZ , "LBZ"   , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LBNZ, "LBNZ"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LBDF, "LBDF"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LBNF, "LBNF"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LBQ , "LBQ"   , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LBNQ, "LBNQ"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LBR , "LBR"   , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_C0 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_NLBR, "NLBR"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::None , &op_C8 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LBZ , "LBZ"   , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_C2 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LBNZ, "LBNZ"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_CA },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LBDF, "LBDF"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_C3 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LBNF, "LBNF"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_CB },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LBQ , "LBQ"   , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_C1 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LBNQ, "LBNQ"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_C9 },
 
             // Skip instructions
-            CDP1802InstructionSpec{ MASK_FULL       , OP_SKP , "SKP"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LSKP, "LSKP"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LSZ , "LSZ"   , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LSNZ, "LSNZ"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LSDF, "LSDF"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LSNF, "LSNF"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LSQ , "LSQ"   , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LSNQ, "LSNQ"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_LSIE, "LSIE"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_SKP , "SKP"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_38 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LSKP, "LSKP"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::None , &op_C8 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LSZ , "LSZ"   , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::None , &op_CE },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LSNZ, "LSNZ"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::None , &op_C6 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LSDF, "LSDF"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::None , &op_CF },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LSNF, "LSNF"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::None , &op_C7 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LSQ , "LSQ"   , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::None , &op_CD },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LSNQ, "LSNQ"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::None , &op_C5 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_LSIE, "LSIE"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::None , &op_CC },
 
             // Control instructions
             CDP1802InstructionSpec{ MASK_FULL       , OP_NOP , "NOP"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_stub },

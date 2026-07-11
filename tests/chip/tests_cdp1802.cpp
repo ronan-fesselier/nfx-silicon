@@ -615,3 +615,589 @@ TEST_SUITE("chip::cdp1xxx::CDP1802 ArithmeticOperations")
         CHECK(u.inspect("DF")->value == 0u);
     }
 }
+
+TEST_SUITE("chip::cdp1xxx::CDP1802 BranchInstructions")
+{
+    TEST_CASE("BR: M(R(P))->R(P).0, unconditional")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // R(P)=0x0000, fetch BR at 0x0000, execute reads 0x42 from bus -> R(P)=0x0042
+        driveBus(u, 0x30);
+        clockN(u, 8);
+        driveBus(u, 0x42);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0042u);
+    }
+
+    TEST_CASE("NBR/SKP: R(P)++, always skip branch byte")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // fetch 0x38: R(P) 0x0000->0x0001, execute R(P)++ -> 0x0002
+        driveBus(u, 0x38);
+        clockN(u, 8);
+        driveBus(u, 0xAA); // on bus during execute, not fetched
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0002u);
+    }
+
+    TEST_CASE("BZ: branch taken when D=0")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // D=0 after reset, BZ must branch -> R(P).0=0x55
+        driveBus(u, 0x32);
+        clockN(u, 8);
+        driveBus(u, 0x55);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0055u);
+    }
+
+    TEST_CASE("BNZ: branch not taken when D=0, R(P)++")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // D=0 after reset, BNZ condition false -> fetch reads branch byte into R(P) then ++
+        // fetch 0x3A: R(P)->0x0001, execute: read(R(P)=0x0001)=0x55, no branch -> R(P)++ -> 0x0002
+        driveBus(u, 0x3A);
+        clockN(u, 8);
+        driveBus(u, 0x55); // branch byte, skipped
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0002u);
+    }
+
+    TEST_CASE("BNF: branch taken when DF=0")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // DF=0 after reset, BNF must branch -> R(P).0=0x10
+        driveBus(u, 0x3B);
+        clockN(u, 8);
+        driveBus(u, 0x10);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0010u);
+    }
+
+    TEST_CASE("BDF: branch taken when DF=1")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        runInstruction(u, 0xFC, 0xFF); // ADI 0xFF -> D=0x00, DF=1
+        driveBus(u, 0x33);
+        clockN(u, 8);
+        driveBus(u, 0x20); // branch target low byte, R(P).1 unchanged
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0020u);
+    }
+
+    TEST_CASE("B1: taken when EF1=1")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+        u.pin("nEF1").drive<Level>(Level::Low); // EF1=1 (active low)
+
+        driveBus(u, 0x34);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0020u);
+    }
+
+    TEST_CASE("B1: not taken when EF1=0, R(P)++")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+        // nEF1 not driven: EF1=0
+
+        driveBus(u, 0x34);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0002u);
+    }
+
+    TEST_CASE("B2: taken when EF2=1")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+        u.pin("nEF2").drive<Level>(Level::Low);
+
+        driveBus(u, 0x35);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0020u);
+    }
+
+    TEST_CASE("B2: not taken when EF2=0, R(P)++")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0x35);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0002u);
+    }
+
+    TEST_CASE("B3: taken when EF3=1")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+        u.pin("nEF3").drive<Level>(Level::Low);
+
+        driveBus(u, 0x36);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0020u);
+    }
+
+    TEST_CASE("B3: not taken when EF3=0, R(P)++")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0x36);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0002u);
+    }
+
+    TEST_CASE("B4: taken when EF4=1")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+        u.pin("nEF4").drive<Level>(Level::Low);
+
+        driveBus(u, 0x37);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0020u);
+    }
+
+    TEST_CASE("B4: not taken when EF4=0, R(P)++")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0x37);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0002u);
+    }
+
+    TEST_CASE("BN1: taken when EF1=0")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+        // nEF1 not driven: EF1=0
+
+        driveBus(u, 0x3C);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0020u);
+    }
+
+    TEST_CASE("BN1: not taken when EF1=1, R(P)++")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+        u.pin("nEF1").drive<Level>(Level::Low);
+
+        driveBus(u, 0x3C);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0002u);
+    }
+
+    TEST_CASE("BN2: taken when EF2=0")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0x3D);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0020u);
+    }
+
+    TEST_CASE("BN2: not taken when EF2=1, R(P)++")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+        u.pin("nEF2").drive<Level>(Level::Low);
+
+        driveBus(u, 0x3D);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0002u);
+    }
+
+    TEST_CASE("BN3: taken when EF3=0")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0x3E);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0020u);
+    }
+
+    TEST_CASE("BN3: not taken when EF3=1, R(P)++")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+        u.pin("nEF3").drive<Level>(Level::Low);
+
+        driveBus(u, 0x3E);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0002u);
+    }
+
+    TEST_CASE("BN4: taken when EF4=0")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0x3F);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0020u);
+    }
+
+    TEST_CASE("BN4: not taken when EF4=1, R(P)++")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+        u.pin("nEF4").drive<Level>(Level::Low);
+
+        driveBus(u, 0x3F);
+        clockN(u, 8);
+        driveBus(u, 0x20);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0002u);
+    }
+
+    TEST_CASE("NLBR/LSKP: R(P)+=2, always skip 2 bytes")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // fetch 0xC8: R(P)->0x0001, execute R(P)+=2->0x0003, extra cycle silent
+        driveBus(u, 0xC8);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0003u);
+    }
+
+    TEST_CASE("LSZ: R(P)+=2 when D=0")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // D=0 after reset, fetch 0xCE: R(P)->0x0001, execute R(P)+=2->0x0003, extra cycle silent
+        driveBus(u, 0xCE);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0003u);
+    }
+
+    TEST_CASE("LSNZ: no skip when D=0")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // D=0 after reset, condition false -> no skip, extra cycle silent
+        driveBus(u, 0xC6);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0001u);
+    }
+
+    TEST_CASE("LSDF: R(P)+=2 when DF=1")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        runInstruction(u, 0xFC, 0xFF); // ADI 0xFF -> DF=1
+        const auto rp_before = u.inspect("R0")->value;
+        driveBus(u, 0xCF);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        CHECK(
+            u.inspect("R0")->value ==
+            static_cast<std::uint16_t>(rp_before + 3u)); // fetch +1, execute +2, extra cycle silent
+    }
+
+    TEST_CASE("LSNF: no skip when DF=1")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01
+        runInstruction(u, 0xFC, 0xFF); // ADI 0xFF -> DF=1
+        const auto rp_before = u.inspect("R0")->value;
+        driveBus(u, 0xC7); // LSNF, DF=1 -> condition false, no skip
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == static_cast<std::uint16_t>(rp_before + 1u)); // fetch +1, extra cycle silent
+    }
+
+    TEST_CASE("LBQ: not taken when Q=0, R(P)+=2")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0xC1);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0003u);
+    }
+
+    TEST_CASE("LBZ: not taken when D!=0, R(P)+=2")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        const auto rp_before = u.inspect("R0")->value;
+        driveBus(u, 0xC2);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == static_cast<std::uint16_t>(rp_before + 3u));
+    }
+
+    TEST_CASE("LBNZ: not taken when D=0, R(P)+=2")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0xCA);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x0003u);
+    }
+
+    TEST_CASE("LBDF: not taken when DF=0, R(P)+=2")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        const auto rp_before = u.inspect("R0")->value;
+        driveBus(u, 0xC3);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == static_cast<std::uint16_t>(rp_before + 3u));
+    }
+
+    TEST_CASE("LBNF: not taken when DF=1, R(P)+=2")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        runInstruction(u, 0xFC, 0xFF); // ADI 0xFF -> DF=1
+        const auto rp_before = u.inspect("R0")->value;
+        driveBus(u, 0xCB);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == static_cast<std::uint16_t>(rp_before + 3u));
+    }
+
+    TEST_CASE("LBR: branches to target address after 3 real machine cycles")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0xC0);
+        clockN(u, 8);
+        driveBus(u, 0x12);
+        clockN(u, 8);
+        driveBus(u, 0x34);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x1234u);
+    }
+
+    TEST_CASE("LBNQ: taken when Q=0, branches to target address")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0xC9);
+        clockN(u, 8);
+        driveBus(u, 0x12);
+        clockN(u, 8);
+        driveBus(u, 0x34);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x1234u);
+    }
+
+    TEST_CASE("LBZ: taken when D=0, branches to target address")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0xC2);
+        clockN(u, 8);
+        driveBus(u, 0x12);
+        clockN(u, 8);
+        driveBus(u, 0x34);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x1234u);
+    }
+
+    TEST_CASE("LBNZ: taken when D!=0, branches to target address")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        driveBus(u, 0xCA);
+        clockN(u, 8);
+        driveBus(u, 0x12);
+        clockN(u, 8);
+        driveBus(u, 0x34);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x1234u);
+    }
+
+    TEST_CASE("LBDF: taken when DF=1, branches to target address")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xF8, 0x01); // LDI 0x01 -> D=0x01
+        runInstruction(u, 0xFC, 0xFF); // ADI 0xFF -> DF=1
+        driveBus(u, 0xC3);
+        clockN(u, 8);
+        driveBus(u, 0x12);
+        clockN(u, 8);
+        driveBus(u, 0x34);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x1234u);
+    }
+
+    TEST_CASE("LBNF: taken when DF=0, branches to target address")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0xCB);
+        clockN(u, 8);
+        driveBus(u, 0x12);
+        clockN(u, 8);
+        driveBus(u, 0x34);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x1234u);
+    }
+
+    TEST_CASE("executePhase resets between instructions")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // NLBR (3 cycles): executePhase goes 0 then 1 across two Execute cycles
+        driveBus(u, 0xC8);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+
+        // LDI 0x99: must dispatch at phase=0, D must be 0x99
+        runInstruction(u, 0xF8, 0x99);
+        CHECK(u.inspect("D")->value == 0x99u);
+    }
+}
