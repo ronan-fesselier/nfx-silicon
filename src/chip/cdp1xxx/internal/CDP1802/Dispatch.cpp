@@ -2,6 +2,7 @@
 #include "instructions/ArithmeticOperations.h"
 #include "instructions/BranchInstructions.h"
 #include "instructions/ControlInstructions.h"
+#include "instructions/IOByteTransfer.h"
 #include "instructions/LogicOperations.h"
 #include "instructions/MemoryReference.h"
 #include "instructions/RegisterOperations.h"
@@ -143,12 +144,6 @@ namespace nfx::silicon::chip::cdp1xxx::cdp1802internal
         constexpr std::uint16_t OP_INP7 = 0x006F; // 6F: INP 7
         // clang-format on
 
-        // TODO: return actual cycle count once instruction handlers are implemented
-        Cycles op_stub(CDP1802& /*cpu*/, std::uint8_t /*opcode*/)
-        {
-            return Cycles{ 2 };
-        }
-
         Cycles op_unknown(CDP1802& /*cpu*/, const std::uint8_t opcode)
         {
             char msg[32]{};
@@ -279,20 +274,20 @@ namespace nfx::silicon::chip::cdp1xxx::cdp1802internal
             CDP1802InstructionSpec{ MASK_FULL       , OP_DIS , "DIS"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_71 },
 
             // Input - output byte transfer
-            CDP1802InstructionSpec{ MASK_FULL       , OP_OUT1, "OUT1"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_OUT2, "OUT2"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_OUT3, "OUT3"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_OUT4, "OUT4"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_OUT5, "OUT5"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_OUT6, "OUT6"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_OUT7, "OUT7"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_INP1, "INP1"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_INP2, "INP2"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_INP3, "INP3"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_INP4, "INP4"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_INP5, "INP5"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_INP6, "INP6"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_stub },
-            CDP1802InstructionSpec{ MASK_FULL       , OP_INP7, "INP7"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_stub }
+            CDP1802InstructionSpec{ MASK_FULL       , OP_OUT1, "OUT1"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_61 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_OUT2, "OUT2"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_62 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_OUT3, "OUT3"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_63 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_OUT4, "OUT4"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_64 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_OUT5, "OUT5"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_65 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_OUT6, "OUT6"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_66 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_OUT7, "OUT7"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_67 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_INP1, "INP1"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_69 },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_INP2, "INP2"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_6A },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_INP3, "INP3"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_6B },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_INP4, "INP4"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_6C },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_INP5, "INP5"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_6D },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_INP6, "INP6"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_6E },
+            CDP1802InstructionSpec{ MASK_FULL       , OP_INP7, "INP7"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_6F }
             // clang-format on
         };
     } // namespace
