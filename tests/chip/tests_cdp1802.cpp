@@ -1023,6 +1023,23 @@ TEST_SUITE("chip::cdp1xxx::CDP1802 BranchInstructions")
         CHECK(u.inspect("R0")->value == 0x0003u);
     }
 
+    TEST_CASE("LBNQ: not taken when Q=1, R(P)+=2")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0x7B, 0x00); // SEQ -> Q=1
+        const auto rp_before = u.inspect("R0")->value;
+        driveBus(u, 0xC9);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        driveBus(u, 0x00);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == static_cast<std::uint16_t>(rp_before + 3u));
+    }
+
     TEST_CASE("LBZ: not taken when D!=0, R(P)+=2")
     {
         CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
@@ -1096,6 +1113,22 @@ TEST_SUITE("chip::cdp1xxx::CDP1802 BranchInstructions")
         u.pin("nCLEAR").drive<Level>(Level::High);
 
         driveBus(u, 0xC0);
+        clockN(u, 8);
+        driveBus(u, 0x12);
+        clockN(u, 8);
+        driveBus(u, 0x34);
+        clockN(u, 8);
+        CHECK(u.inspect("R0")->value == 0x1234u);
+    }
+
+    TEST_CASE("LBQ: taken when Q=1, branches to target address")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0x7B, 0x00); // SEQ -> Q=1
+        driveBus(u, 0xC1);
         clockN(u, 8);
         driveBus(u, 0x12);
         clockN(u, 8);
@@ -1199,5 +1232,159 @@ TEST_SUITE("chip::cdp1xxx::CDP1802 BranchInstructions")
         // LDI 0x99: must dispatch at phase=0, D must be 0x99
         runInstruction(u, 0xF8, 0x99);
         CHECK(u.inspect("D")->value == 0x99u);
+    }
+}
+
+TEST_SUITE("chip::cdp1xxx::CDP1802 ControlInstructions")
+{
+    TEST_CASE("IDL: opcode 0x00 dispatches to IDL not LDN, SC=S1 on next cycle")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0x00); // IDL
+        clockN(u, 8);      // Fetch: opcode 0x00
+        driveBus(u, 0x42); // bus value LDN would read, must be ignored
+        clockN(u, 8);      // Execute: IDL sets idling, D must not change
+        CHECK(u.inspect("D")->value == 0x00u);
+
+        // CPU stays in S1 (SC1=Low, SC0=High)
+        u.pin("CLOCK").drive<Level>(Level::High);
+        CHECK(u.pin("SC1").read<Level>() == Level::Low);
+        CHECK(u.pin("SC0").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("SEP: N->P")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xD3, 0x00); // SEP R3 -> P=3
+        CHECK(u.inspect("P")->value == 3u);
+    }
+
+    TEST_CASE("SEX: N->X")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0xE5, 0x00); // SEX R5 -> X=5
+        CHECK(u.inspect("X")->value == 5u);
+    }
+
+    TEST_CASE("SEQ: 1->Q, Q pin High")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0x7B, 0x00);            // SEQ
+        u.pin("CLOCK").drive<Level>(Level::High); // beginCycle of next cycle propagates Q pin
+        CHECK(u.inspect("Q")->value == 1u);
+        CHECK(u.pin("Q").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("REQ: 0->Q, Q pin Low")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        runInstruction(u, 0x7B, 0x00);            // SEQ -> Q=1
+        runInstruction(u, 0x7A, 0x00);            // REQ -> Q=0
+        u.pin("CLOCK").drive<Level>(Level::High); // beginCycle of next cycle propagates Q pin
+        CHECK(u.inspect("Q")->value == 0u);
+        CHECK(u.pin("Q").read<Level>() == Level::Low);
+    }
+
+    TEST_CASE("SAV: T->M(R(X)), nMWR pulses")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0x78); // fetch SAV
+        clockN(u, 8);
+        driveBus(u, 0x00);
+
+        bool sawNMWRLow = false;
+        for (int i = 0; i < 8; ++i)
+        {
+            u.pin("CLOCK").drive<Level>(Level::High);
+            if (u.pin("nMWR").read<Level>() == Level::Low)
+            {
+                sawNMWRLow = true;
+            }
+            u.pin("CLOCK").drive<Level>(Level::Low);
+        }
+        u.pin("CLOCK").drive<Level>(Level::High);
+        CHECK(sawNMWRLow);
+        CHECK(u.pin("nMWR").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("MARK: (X,P)->T, P->X, R(2)--, nMWR pulses")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // After reset: X=0, P=0, R(2)=0x0000. Fetch MARK: R(0)=0x0001.
+        // MARK: T=(0<<4)|0=0x00, write 0x00->M(R(2)=0x0000), X=P=0, R(2)--=0xFFFF
+        driveBus(u, 0x79); // fetch MARK
+        clockN(u, 8);
+        driveBus(u, 0x00);
+
+        bool sawNMWRLow = false;
+        for (int i = 0; i < 8; ++i)
+        {
+            u.pin("CLOCK").drive<Level>(Level::High);
+            if (u.pin("nMWR").read<Level>() == Level::Low)
+            {
+                sawNMWRLow = true;
+            }
+            u.pin("CLOCK").drive<Level>(Level::Low);
+        }
+        u.pin("CLOCK").drive<Level>(Level::High);
+
+        CHECK(u.inspect("T")->value == 0x00u);
+        CHECK(u.inspect("X")->value == 0u);
+        CHECK(u.inspect("P")->value == 0u);
+        CHECK(u.inspect("R2")->value == 0xFFFFu);
+        CHECK(sawNMWRLow);
+        CHECK(u.pin("nMWR").read<Level>() == Level::High);
+    }
+
+    TEST_CASE("RET: M(R(X))->(X,P), R(X)++, IE=1")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        // X=0, R(X=0)=0x0001 after fetch, RET reads bus value 0x23 -> X=2, P=3, R(0)++
+        driveBus(u, 0x70); // fetch RET
+        clockN(u, 8);
+        driveBus(u, 0x23); // M(R(X)) = 0x23 -> X=2, P=3
+        clockN(u, 8);
+        CHECK(u.inspect("X")->value == 2u);
+        CHECK(u.inspect("P")->value == 3u);
+        CHECK(u.inspect("IE")->value == 1u);
+    }
+
+    TEST_CASE("DIS: M(R(X))->(X,P), R(X)++, IE=0")
+    {
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        driveBus(u, 0x71); // fetch DIS
+        clockN(u, 8);
+        driveBus(u, 0x23); // M(R(X)) = 0x23 -> X=2, P=3
+        clockN(u, 8);
+        CHECK(u.inspect("X")->value == 2u);
+        CHECK(u.inspect("P")->value == 3u);
+        CHECK(u.inspect("IE")->value == 0u);
     }
 }
