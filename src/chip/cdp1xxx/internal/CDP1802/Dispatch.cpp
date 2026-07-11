@@ -171,8 +171,6 @@ namespace nfx::silicon::chip::cdp1xxx::cdp1802internal
         constexpr std::array<CDP1802InstructionSpec, 99> kInstructionTable{
             // clang-format off
             //                      Mask              Value    Mnemonic  MinCycles    MaxCycles    BusAccess                                 Execute
-            CDP1802InstructionSpec{ MASK_FULL       , OP_IDL , "IDL"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_00 },
-
             // Memory reference
             CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_LDN , "LDN"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_0n },
             CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_LDA , "LDA"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_4n },
@@ -263,6 +261,7 @@ namespace nfx::silicon::chip::cdp1xxx::cdp1802internal
             CDP1802InstructionSpec{ MASK_FULL       , OP_LSIE, "LSIE"  , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::None , &op_CC },
 
             // Control instructions
+            CDP1802InstructionSpec{ MASK_FULL       , OP_IDL , "IDL"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Read , &op_00 },
             CDP1802InstructionSpec{ MASK_FULL       , OP_NOP , "NOP"   , Cycles{ 3 }, Cycles{ 3 }, CDP1802InstructionSpec::BusAccess::None , &op_C4 },
             CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_SEP , "SEP"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_Dn },
             CDP1802InstructionSpec{ MASK_NIBBLE_HIGH, OP_SEX , "SEX"   , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::None , &op_En },
@@ -290,18 +289,67 @@ namespace nfx::silicon::chip::cdp1xxx::cdp1802internal
             CDP1802InstructionSpec{ MASK_FULL       , OP_INP7, "INP7"  , Cycles{ 2 }, Cycles{ 2 }, CDP1802InstructionSpec::BusAccess::Write, &op_6F }
             // clang-format on
         };
+
+        using Handler = Cycles (*)(CDP1802&, std::uint8_t);
+        constexpr std::array<Handler, 256> buildDispatchTable()
+        {
+            std::array<Handler, 256> table{};
+            for (auto& h : table)
+            {
+                h = &op_unknown;
+            }
+
+            for (const auto& spec : kInstructionTable)
+            {
+                if (spec.mask == MASK_NIBBLE_HIGH)
+                {
+                    const std::uint8_t base = static_cast<std::uint8_t>(spec.value & 0xF0u);
+                    for (std::uint8_t n = 0u; n < 16u; ++n)
+                    {
+                        table[static_cast<std::size_t>(base | n)] = spec.execute;
+                    }
+                }
+            }
+
+            for (const auto& spec : kInstructionTable)
+            {
+                if (spec.mask == MASK_FULL)
+                {
+                    table[static_cast<std::size_t>(spec.value & 0xFFu)] = spec.execute;
+                }
+            }
+
+            return table;
+        }
+
+        constexpr std::array<Handler, 256> kDispatchTable = buildDispatchTable();
+
     } // namespace
 
     const CDP1802InstructionSpec& cdp1802Spec(const std::uint8_t opcode)
     {
-        const auto* spec = internal::cpu::findInstruction<CDP1802, std::uint8_t>(
-            opcode, kInstructionTable.data(), kInstructionTable.size());
-        return (spec != nullptr) ? *spec : kUnknown;
+        const CDP1802InstructionSpec* fallback = nullptr;
+
+        for (const auto& spec : kInstructionTable)
+        {
+            if (internal::cpu::matchesInstruction<CDP1802, std::uint8_t>(opcode, spec))
+            {
+                if (spec.mask == MASK_FULL)
+                {
+                    return spec;
+                }
+                if (fallback == nullptr)
+                {
+                    fallback = &spec;
+                }
+            }
+        }
+
+        return (fallback != nullptr) ? *fallback : kUnknown;
     }
 
     nfx::silicon::Cycles cdp1802Dispatch(cdp1xxx::CDP1802& cpu, const std::uint8_t opcode)
     {
-        const auto& spec = cdp1802Spec(opcode);
-        return spec.execute(cpu, opcode);
+        return kDispatchTable[static_cast<std::size_t>(opcode)](cpu, opcode);
     }
 } // namespace nfx::silicon::chip::cdp1xxx::cdp1802internal

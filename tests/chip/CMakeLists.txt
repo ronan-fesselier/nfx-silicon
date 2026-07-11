@@ -13,6 +13,11 @@ target_compile_definitions(nfx-silicon-tests-chip
         DOCTEST_CONFIG_USE_STD_HEADERS
 )
 
+target_include_directories(nfx-silicon-tests-chip
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+)
+
 target_link_libraries(nfx-silicon-tests-chip
     PRIVATE
         doctest::doctest_with_main
