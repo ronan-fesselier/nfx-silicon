@@ -1474,4 +1474,99 @@ TEST_SUITE("chip::cdp1xxx::CDP1802 IOByteTransfer")
         CHECK(sawNMWRLow);
         CHECK(u.pin("nMWR").read<Level>() == Level::High);
     }
+
+    TEST_SUITE("chip::cdp1xxx::CDP1802 DMAInterrupt")
+    {
+        TEST_CASE("nDMAI: R(0)++ after DMA-In cycle, SC=S0")
+        {
+            CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+            power(u);
+            u.pin("nCLEAR").drive<Level>(Level::High);
+
+            // Fetch LDI (2-cycle instruction), assert nDMAI before Execute completes
+            driveBus(u, 0xF8); // fetch LDI
+            clockN(u, 8);
+            u.pin("nDMAI").drive<Level>(Level::Low);
+            driveBus(u, 0x00);
+            clockN(u, 8); // Execute LDI: endCycle() sees dmaIn, next state = DmaIn
+
+            // DmaIn cycle: SC=S2 (SC1=High, SC0=Low)
+            bool sawSC2 = false;
+            for (int i = 0; i < 8; ++i)
+            {
+                u.pin("CLOCK").drive<Level>(Level::High);
+                if (u.pin("SC1").read<Level>() == Level::High && u.pin("SC0").read<Level>() == Level::Low)
+                {
+                    sawSC2 = true;
+                }
+                u.pin("CLOCK").drive<Level>(Level::Low);
+            }
+            u.pin("nDMAI").drive<Level>(Level::High);
+
+            CHECK(sawSC2);
+            // R(0): fetch=+1, LDI operand=+1, DmaIn=+1 -> 3
+            CHECK(u.inspect("R0")->value == 0x0003u);
+        }
+
+        TEST_CASE("nDMAO: R(0)++ after DMA-Out cycle, SC=S0")
+        {
+            CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+            power(u);
+            u.pin("nCLEAR").drive<Level>(Level::High);
+
+            driveBus(u, 0xF8); // fetch LDI
+            clockN(u, 8);
+            u.pin("nDMAO").drive<Level>(Level::Low);
+            driveBus(u, 0x00);
+            clockN(u, 8); // Execute LDI: endCycle() sees dmaOut, next state = DmaOut
+
+            bool sawSC2 = false;
+            for (int i = 0; i < 8; ++i)
+            {
+                u.pin("CLOCK").drive<Level>(Level::High);
+                if (u.pin("SC1").read<Level>() == Level::High && u.pin("SC0").read<Level>() == Level::Low)
+                {
+                    sawSC2 = true;
+                }
+                u.pin("CLOCK").drive<Level>(Level::Low);
+            }
+            u.pin("nDMAO").drive<Level>(Level::High);
+
+            CHECK(sawSC2);
+            // R(0): fetch=+1, LDI operand=+1, DmaOut=+1 -> 3
+            CHECK(u.inspect("R0")->value == 0x0003u);
+        }
+
+        TEST_CASE("nINT: (X,P)->T, 1->P, 2->X, IE=0 after interrupt cycle")
+        {
+            CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+            power(u);
+            u.pin("nCLEAR").drive<Level>(Level::High);
+
+            // IE=1 after reset. Assert nINT before Execute completes.
+            driveBus(u, 0xF8); // fetch LDI
+            clockN(u, 8);
+            u.pin("nINT").drive<Level>(Level::Low);
+            driveBus(u, 0x00);
+            clockN(u, 8); // Execute LDI: endCycle() sees interrupt+IE, next state = Interrupt
+
+            bool sawSC3 = false;
+            for (int i = 0; i < 8; ++i)
+            {
+                u.pin("CLOCK").drive<Level>(Level::High);
+                if (u.pin("SC1").read<Level>() == Level::High && u.pin("SC0").read<Level>() == Level::High)
+                {
+                    sawSC3 = true;
+                }
+                u.pin("CLOCK").drive<Level>(Level::Low);
+            }
+            u.pin("nINT").drive<Level>(Level::High);
+
+            CHECK(sawSC3);
+            CHECK(u.inspect("T")->value == 0x00u); // (X=0 << 4) | P=0
+            CHECK(u.inspect("P")->value == 1u);
+            CHECK(u.inspect("X")->value == 2u);
+            CHECK(u.inspect("IE")->value == 0u);
+        }
+    }
 }
