@@ -202,6 +202,7 @@
 
 ##### chip
 
+- `cdp1802-fibo`: CDP1802 COSMAC CPU computing 16-bit Fibonacci via pin-accurate LLE simulation of a 5-chip COSMAC system (CDP1802 + LS373 + CDP1832 + I2114x2 + LS04), A7-based ROM/RAM decode, ADD/ADC carry chain, I2114 preloaded with seed values, each new term captured on nMWR and printed until 16-bit overflow at F(25)
 - `cdp1852-io`: CDP1852 input/output port walkthrough, peripheral-to-CPU latch with /SR service request (input mode), CPU-to-peripheral register drive with SR acknowledge (output mode), async CLEAR on both modes
 - `cdp1861C-console-framebuffer`: CDP1861C DMA-driven 64x128 framebuffer fill with checkerboard VRAM, pixel capture via VIDEO shift output
 - `cdp1861C-timing`: CDP1861C first display scanline signal trace, signals sampled after each CLK falling edge over 8 DMA bytes
