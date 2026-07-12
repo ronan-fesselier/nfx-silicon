@@ -1570,3 +1570,139 @@ TEST_SUITE("chip::cdp1xxx::CDP1802 IOByteTransfer")
         }
     }
 }
+
+TEST_SUITE("chip::cdp1xxx::CDP1802 BusTiming")
+{
+    static const char* k_busPins[8] = { "BUS0", "BUS1", "BUS2", "BUS3", "BUS4", "BUS5", "BUS6", "BUS7" };
+    static const char* k_maPins[8] = { "MA0", "MA1", "MA2", "MA3", "MA4", "MA5", "MA6", "MA7" };
+
+    static auto addrFromMA(CDP1802 & u) -> uint8_t
+    {
+        uint8_t v = 0;
+        for (int i = 0; i < 8; ++i)
+        {
+            if (u.pin(k_maPins[i]).read<Level>() == Level::High)
+            {
+                v |= static_cast<uint8_t>(1u << i);
+            }
+        }
+        return v;
+    }
+
+    static auto dataFromBus(CDP1802 & u) -> uint8_t
+    {
+        uint8_t v = 0;
+        for (int i = 0; i < 8; ++i)
+        {
+            if (u.pin(k_busPins[i]).read<Level>() == Level::High)
+            {
+                v |= static_cast<uint8_t>(1u << i);
+            }
+        }
+        return v;
+    }
+
+    static auto driveBusVal(CDP1802 & u, uint8_t val) -> void
+    {
+        for (int i = 0; i < 8; ++i)
+        {
+            u.pin(k_busPins[i]).drive<Level>((val & (1u << i)) ? Level::High : Level::Low);
+        }
+    }
+
+    static auto releaseBusAll(CDP1802 & u) -> void
+    {
+        for (auto* n : k_busPins)
+        {
+            u.pin(n).release();
+        }
+    }
+
+    TEST_CASE("LDN: Execute bus read uses address from R(N) not R(P)")
+    {
+        std::array<uint8_t, 256> mem{};
+        mem[0x00] = 0xF8; // LDI
+        mem[0x01] = 0x00; // 0x00
+        mem[0x02] = 0xB2; // PHI R2  (R2.hi = 0x00)
+        mem[0x03] = 0xF8; // LDI
+        mem[0x04] = 0x50; // 0x50
+        mem[0x05] = 0xA2; // PLO R2  (R2 = 0x0050)
+        mem[0x06] = 0x02; // LDN R2
+        mem[0x50] = 0xAB;
+
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        bool readActive = false;
+        u.pin("nMRD").connect<Level>([&](Level lvl) {
+            if (lvl == Level::Low)
+            {
+                readActive = true;
+            }
+            else
+            {
+                readActive = false;
+                releaseBusAll(u);
+            }
+        });
+        u.pin("TPB").connect<Level>([&](Level lvl) {
+            if (lvl == Level::High && readActive)
+            {
+                driveBusVal(u, mem[addrFromMA(u)]);
+            }
+        });
+        u.pin("nMWR").connect<Level>([&](Level lvl) {
+            if (lvl == Level::Low)
+            {
+                mem[addrFromMA(u)] = dataFromBus(u);
+            }
+        });
+
+        clockN(u, 80); // 5 instructions x (fetch 8 + execute 8) clocks
+
+        CHECK(u.inspect("D")->value == 0xABu);
+    }
+
+    TEST_CASE("STR: write address captured from MA on nMWR falling edge is correct")
+    {
+        std::array<uint8_t, 256> mem{};
+        mem[0x00] = 0xF8;
+        mem[0x01] = 0xCD;
+        mem[0x02] = 0x51;
+        mem[0x03] = 0x00;
+
+        CDP1802 u{ CDP1802::Descriptor{ .name = "U1" } };
+        power(u);
+        u.pin("nCLEAR").drive<Level>(Level::High);
+
+        bool readActive = false;
+        u.pin("nMRD").connect<Level>([&](Level lvl) {
+            if (lvl == Level::Low)
+            {
+                readActive = true;
+            }
+            else
+            {
+                readActive = false;
+                releaseBusAll(u);
+            }
+        });
+        u.pin("TPB").connect<Level>([&](Level lvl) {
+            if (lvl == Level::High && readActive)
+            {
+                driveBusVal(u, mem[addrFromMA(u)]);
+            }
+        });
+        u.pin("nMWR").connect<Level>([&](Level lvl) {
+            if (lvl == Level::Low)
+            {
+                mem[addrFromMA(u)] = dataFromBus(u);
+            }
+        });
+
+        clockN(u, 32);
+
+        CHECK(mem[0x01] == 0xCDu);
+    }
+}
