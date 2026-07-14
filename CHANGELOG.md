@@ -204,6 +204,7 @@
 
 - `cdp1802-fibo`: CDP1802 COSMAC CPU computing 16-bit Fibonacci via pin-accurate LLE simulation of a 5-chip COSMAC system (CDP1802 + LS373 + CDP1832 + I2114x2 + LS04), A7-based ROM/RAM decode, ADD/ADC carry chain, I2114 preloaded with seed values, each new term captured on nMWR and printed until 16-bit overflow at F(25)
 - `cdp1802-irq`: CDP1802 interrupt-driven counter, nINT asserted periodically by a machine-cycle counter, ISR uses DEC R2/SAV stack discipline and EXIT_INT RET at INT_VECTOR-1 to correct R1 drift, increments R5 every k_targetTicks interrupts and halts at IDL, pin-accurate TPB/nMWR software memory stub
+- `cdp1802-keypad`: CDP1802 interactive hex keypad sample, CDP1802 + CDP1832 + I2114x2 + LS04 + CD4515B, ROM scans 16 columns via OUT 2 onto BUS0-3, CD4515B drives selected column Low, pressed key detected via nEF3 (BN3), key code stored at RAM[0x080]
 - `cdp1852-io`: CDP1852 input/output port walkthrough, peripheral-to-CPU latch with /SR service request (input mode), CPU-to-peripheral register drive with SR acknowledge (output mode), async CLEAR on both modes
 - `cdp1861C-console-framebuffer`: CDP1861C DMA-driven 64x128 framebuffer fill with checkerboard VRAM, pixel capture via VIDEO shift output
 - `cdp1861C-timing`: CDP1861C first display scanline signal trace, signals sampled after each CLK falling edge over 8 DMA bytes
